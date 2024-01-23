@@ -146,7 +146,14 @@ class GeneratorPage extends StatelessWidget {
                 scrollDirection:Axis.horizontal,
                 child: Row(
                   children: [
-                    Image.asset('assets/images/image_burger.jpeg'),
+                    Image.asset('assets/images/image_burger.jpeg',width:100,height: 100,fit: BoxFit.cover,),
+                    Image.asset('assets/images/image_chicken.jpeg',width:100,height: 100,),
+                    Image.asset('assets/images/image_cider.jpeg',width:100,height: 100,),
+                    Image.asset('assets/images/image_jjamppong.jpeg',width:100,height: 100,),
+                    Image.asset('assets/images/image_salad.jpg',width:100,height: 100,),
+                    Image.asset('assets/images/image_sweetpotato.jpeg',width:100,height: 100,),
+                    Image.asset('assets/images/image_tteokbokki.jpeg',width:100,height: 100,),
+                    
                     Container(width:50,height: 50, color:Color.fromARGB(255, 101, 222, 243)),
                     Container(width:50,height: 50,color:Color.fromARGB(255, 10, 24, 26)),
                     Container(width:50,height: 50,color:Color.fromARGB(255, 101, 222, 243)),
