@@ -56,6 +56,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 0;
+  void _onItemTapped(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,46 +73,24 @@ class _MyHomePageState extends State<MyHomePage> {
       case 1:
         page = FavoritesPage();
         break;
+      case 2:
+        page = Placeholder();
+        break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
-    return LayoutBuilder(
-      builder: (context,constraints) {
-        return Scaffold(
-          body: Row(
-            children: [
-              SafeArea(
-                child: NavigationRail(
-                  extended: constraints.maxWidth >= 500,
-                  destinations: [
-                    NavigationRailDestination(
-                      icon: Icon(Icons.home),
-                      label: Text('Home'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.favorite),
-                      label: Text('Favorites'),
-                    ),
-        
-                  ],
-                  selectedIndex: selectedIndex,
-                  onDestinationSelected: (value) {
-                    setState(() {
-                      selectedIndex = value;
-                    });
-                  },
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  child: page,
-                ),
-              ),
-            ],
-          ),
-        );
-      }
+    return Scaffold(
+      appBar: AppBar(title: Center(child: Text('NutriFit'))),
+      body: Expanded(child: Container(child:page)),
+      bottomNavigationBar: BottomNavigationBar(items: const <BottomNavigationBarItem> [
+        BottomNavigationBarItem(icon: Icon(Icons.home),label: 'Home',),
+        BottomNavigationBarItem(icon: Icon(Icons.business),label: 'business',),
+        BottomNavigationBarItem(icon: Icon(Icons.favorite),label: 'favorite',)
+        ],
+        currentIndex: selectedIndex,
+        onTap: _onItemTapped,
+
+        ),
     );
   }
 }
