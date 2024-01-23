@@ -68,10 +68,10 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget page;
     switch (selectedIndex){
       case 0:
-        page = GeneratorPage();
+        page = FavoritesPage();
         break;
       case 1:
-        page = FavoritesPage();
+        page = GeneratorPage();
         break;
       case 2:
         page = Placeholder();
@@ -80,12 +80,12 @@ class _MyHomePageState extends State<MyHomePage> {
         throw UnimplementedError('no widget for $selectedIndex');
     }
     return Scaffold(
-      appBar: AppBar(title: Center(child: Text('NutriFit'))),
+      appBar: AppBar(title: Center(child: Text('NutriFit',style: TextStyle(fontSize: 30),))),
       body: Expanded(child: Container(child:page)),
       bottomNavigationBar: BottomNavigationBar(items: const <BottomNavigationBarItem> [
-        BottomNavigationBarItem(icon: Icon(Icons.home),label: 'Home',),
-        BottomNavigationBarItem(icon: Icon(Icons.business),label: 'business',),
-        BottomNavigationBarItem(icon: Icon(Icons.favorite),label: 'favorite',)
+        BottomNavigationBarItem(icon: Icon(Icons.manage_search),label: 'search',),
+        BottomNavigationBarItem(icon: Icon(Icons.home),label: 'home',),
+        BottomNavigationBarItem(icon: Icon(Icons.person),label: 'my page',)
         ],
         currentIndex: selectedIndex,
         onTap: _onItemTapped,
@@ -133,6 +133,36 @@ class GeneratorPage extends StatelessWidget {
               ),
             ],
           ),
+          SizedBox(height: 50,),
+          Container(
+            color: Color.fromARGB(255, 211, 210, 210),
+            height: 7,
+          ),
+          SizedBox(height: 50,),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              child: SingleChildScrollView(
+                scrollDirection:Axis.horizontal,
+                child: Row(
+                  children: [
+                    Image.asset('assets/images/image_burger.jpeg'),
+                    Container(width:50,height: 50, color:Color.fromARGB(255, 101, 222, 243)),
+                    Container(width:50,height: 50,color:Color.fromARGB(255, 10, 24, 26)),
+                    Container(width:50,height: 50,color:Color.fromARGB(255, 101, 222, 243)),
+                    Container(width:50,height: 50,color:Color.fromARGB(255, 10, 24, 26)),
+                    Container(width:50,height: 50,color:Color.fromARGB(255, 101, 222, 243)),
+                    Container(width:50,height: 50,color:Color.fromARGB(255, 10, 24, 26)),
+                    Container(width:50,height: 50,color:Color.fromARGB(255, 101, 222, 243)),
+                    Container(width:50,height: 50,color:Color.fromARGB(255, 10, 24, 26)),
+                    Container(width:50,height: 50,color:Color.fromARGB(255, 101, 222, 243))
+                    
+                  ]
+                  ),
+               ),
+            
+            ),
+          )
         ],
       ),
     );

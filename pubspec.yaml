@@ -23,3 +23,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+assets:
+    - assets/images/image_cider.jpeg
+    - assets/images/image_sweetpotato.jpeg
+    - assets/images/image_jjamppong.jpeg
+    - assets/images/image_tteokbokki.jpeg
+    - assets/images/image_chicken.jpeg
+    - assets/images/image_burger.jpeg
+    - assets/images/image_salad.jpg
