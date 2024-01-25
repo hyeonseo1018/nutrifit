@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -34,6 +36,17 @@ class MyAppState extends ChangeNotifier {
   }
 
   var favorites = <WordPair>[];
+
+  var count = 0;
+
+  void add() {
+    count += 1;
+    notifyListeners();
+  }
+  void sub(){
+    count -= 1;
+    notifyListeners();
+  }
 
   void toggleFavorite() {
     if (favorites.contains(current)) {
@@ -141,34 +154,51 @@ class GeneratorPage extends StatelessWidget {
           SizedBox(height: 50,),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Container(
-              child: SingleChildScrollView(
-                scrollDirection:Axis.horizontal,
-                child: Row(
-                  children: [
-                    Image.asset('assets/images/image_burger.jpeg',width:100,height: 100,fit: BoxFit.cover,),
-                    Image.asset('assets/images/image_chicken.jpeg',width:100,height: 100,),
-                    Image.asset('assets/images/image_cider.jpeg',width:100,height: 100,),
-                    Image.asset('assets/images/image_jjamppong.jpeg',width:100,height: 100,),
-                    Image.asset('assets/images/image_salad.jpg',width:100,height: 100,),
-                    Image.asset('assets/images/image_sweetpotato.jpeg',width:100,height: 100,),
-                    Image.asset('assets/images/image_tteokbokki.jpeg',width:100,height: 100,),
-                    
-                    Container(width:50,height: 50, color:Color.fromARGB(255, 101, 222, 243)),
-                    Container(width:50,height: 50,color:Color.fromARGB(255, 10, 24, 26)),
-                    Container(width:50,height: 50,color:Color.fromARGB(255, 101, 222, 243)),
-                    Container(width:50,height: 50,color:Color.fromARGB(255, 10, 24, 26)),
-                    Container(width:50,height: 50,color:Color.fromARGB(255, 101, 222, 243)),
-                    Container(width:50,height: 50,color:Color.fromARGB(255, 10, 24, 26)),
-                    Container(width:50,height: 50,color:Color.fromARGB(255, 101, 222, 243)),
-                    Container(width:50,height: 50,color:Color.fromARGB(255, 10, 24, 26)),
-                    Container(width:50,height: 50,color:Color.fromARGB(255, 101, 222, 243))
-                    
-                  ]
+            child: SingleChildScrollView(
+              scrollDirection:Axis.horizontal,
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Image.asset('assets/images/image_burger.jpeg',width:100,height: 100,fit: BoxFit.cover,),
+                        Text('M-burger'),
+                        Container(
+                          color: Color.fromARGB(255, 188, 152, 152),
+                          child: Row(children: [IconButton(onPressed: (){appState.add();}, icon: Icon(Icons.add)),
+                          Text(appState.count.toString()),
+                          IconButton(onPressed: (){appState.sub();}, icon: Icon(Icons.remove))
+                          ],),
+                          
+                        )
+                        
+                      ],
+                    ),
                   ),
-               ),
+                  Image.asset('assets/images/image_sweetpotato.jpeg',width:100,height: 100,fit: BoxFit.cover,),
+                  Image.asset('assets/images/image_chicken.jpeg',width:100,height: 100,fit: BoxFit.cover,),
+                  Image.asset('assets/images/image_cider.jpeg',width:100,height: 100,fit: BoxFit.cover,),
+                  Image.asset('assets/images/image_jjamppong.jpeg',width:100,height: 100,fit: BoxFit.cover,),
+                  Image.asset('assets/images/image_salad.jpg',width:100,height: 100,fit: BoxFit.cover,),
+                  
+                  Image.asset('assets/images/image_tteokbokki.jpeg',width:100,height: 100,fit: BoxFit.cover,),
+                  
+                  Container(width:50,height: 50, color:Color.fromARGB(255, 101, 222, 243)),
+                  Container(width:50,height: 50,color:Color.fromARGB(255, 10, 24, 26)),
+                  Container(width:50,height: 50,color:Color.fromARGB(255, 101, 222, 243)),
+                  Container(width:50,height: 50,color:Color.fromARGB(255, 10, 24, 26)),
+                  Container(width:50,height: 50,color:Color.fromARGB(255, 101, 222, 243)),
+                  Container(width:50,height: 50,color:Color.fromARGB(255, 10, 24, 26)),
+                  Container(width:50,height: 50,color:Color.fromARGB(255, 101, 222, 243)),
+                  Container(width:50,height: 50,color:Color.fromARGB(255, 10, 24, 26)),
+                  Container(width:50,height: 50,color:Color.fromARGB(255, 101, 222, 243))
+                  
+                ]
+                ),
+              ),
             
-            ),
+            
           )
         ],
       ),
