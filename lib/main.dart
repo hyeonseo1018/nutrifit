@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -151,7 +149,11 @@ class GeneratorPage extends StatelessWidget {
             color: Color.fromARGB(255, 211, 210, 210),
             height: 7,
           ),
-          SizedBox(height: 50,),
+          SizedBox(height: 30,),
+          SizedBox(width: double.infinity,child: Padding(
+            padding: const EdgeInsets.only(left:16.0),
+            child: Text('오늘 먹은 음식',textAlign: TextAlign.left,),
+          ),),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: SingleChildScrollView(
@@ -164,14 +166,10 @@ class GeneratorPage extends StatelessWidget {
                       children: [
                         Image.asset('assets/images/image_burger.jpeg',width:100,height: 100,fit: BoxFit.cover,),
                         Text('M-burger'),
-                        Container(
-                          color: Color.fromARGB(255, 188, 152, 152),
-                          child: Row(children: [IconButton(onPressed: (){appState.add();}, icon: Icon(Icons.add)),
-                          Text(appState.count.toString()),
-                          IconButton(onPressed: (){appState.sub();}, icon: Icon(Icons.remove))
-                          ],),
-                          
-                        )
+                        Row(children: [IconButton(onPressed: (){appState.add();}, icon: Icon(Icons.add)),
+                        Text(appState.count.toString()),
+                        IconButton(onPressed: (){appState.sub();}, icon: Icon(Icons.remove))
+                        ],)
                         
                       ],
                     ),
