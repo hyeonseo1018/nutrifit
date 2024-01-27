@@ -165,7 +165,24 @@ class GeneratorPage extends StatelessWidget {
                     child: Column(
                       children: [
                         Image.asset('assets/images/image_burger.jpeg',width:100,height: 100,fit: BoxFit.cover,),
-                        Text('M-burger'),
+                        Row(
+                          children: [
+                            Text('M-burger'),
+                            Container(
+                              
+                              child: ElevatedButton(onPressed: (){
+                                Navigator.push(context,MaterialPageRoute(builder: (context) =>  SecondRoute()));
+                              } , style: ElevatedButton.styleFrom(
+                                minimumSize: Size.zero,
+                                padding:  EdgeInsets.all(3.0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(0)
+                                )
+                              ),
+                              child: Text('자세히',style: TextStyle(fontSize: 10,color: Colors.black),)),
+                            )
+                          ],
+                        ),
                         Row(children: [IconButton(onPressed: (){appState.add();}, icon: Icon(Icons.add)),
                         Text(appState.count.toString()),
                         IconButton(onPressed: (){appState.sub();}, icon: Icon(Icons.remove))
@@ -181,16 +198,7 @@ class GeneratorPage extends StatelessWidget {
                   Image.asset('assets/images/image_salad.jpg',width:100,height: 100,fit: BoxFit.cover,),
                   
                   Image.asset('assets/images/image_tteokbokki.jpeg',width:100,height: 100,fit: BoxFit.cover,),
-                  
-                  Container(width:50,height: 50, color:Color.fromARGB(255, 101, 222, 243)),
-                  Container(width:50,height: 50,color:Color.fromARGB(255, 10, 24, 26)),
-                  Container(width:50,height: 50,color:Color.fromARGB(255, 101, 222, 243)),
-                  Container(width:50,height: 50,color:Color.fromARGB(255, 10, 24, 26)),
-                  Container(width:50,height: 50,color:Color.fromARGB(255, 101, 222, 243)),
-                  Container(width:50,height: 50,color:Color.fromARGB(255, 10, 24, 26)),
-                  Container(width:50,height: 50,color:Color.fromARGB(255, 101, 222, 243)),
-                  Container(width:50,height: 50,color:Color.fromARGB(255, 10, 24, 26)),
-                  Container(width:50,height: 50,color:Color.fromARGB(255, 101, 222, 243))
+                
                   
                 ]
                 ),
@@ -235,6 +243,54 @@ class FavoritesPage extends StatelessWidget {
       ],
     );
   }
+}
+class SecondRoute extends StatelessWidget{
+  @override
+  Widget build(BuildContext context){
+    var appState = context.watch<MyAppState>();
+
+    return Scaffold(
+      appBar: AppBar(title:Text('M-burger 의 성분'),),
+      body: Card(child: Container(
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 30,
+                    height: 30,
+                    color: const Color.fromARGB(255, 215, 209, 209),
+                    child: IconButton(onPressed: (){appState.add();}, 
+                    padding: EdgeInsets.zero,
+                    constraints: BoxConstraints(),
+                    icon: Icon(Icons.add))),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(appState.count.toString()),
+                  ),
+                  Container(
+                    width: 30,
+                    height: 30,
+                    color: const Color.fromARGB(255, 215, 209, 209),
+                    child: IconButton(onPressed: (){appState.sub();}, 
+                    padding: EdgeInsets.zero,
+                    constraints: BoxConstraints(),
+                    icon: Icon(Icons.remove)))
+                  ],),
+              SizedBox(height: 50,),
+              Text('탄수화물 :',style: TextStyle(fontSize: 20),)
+            ]),
+        ),
+      )
+      )
+      );
+  }
+  
 }
 
 class BigCard extends StatelessWidget {
