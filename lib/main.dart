@@ -89,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget page;
     switch (selectedIndex){
       case 0:
-        page = FavoritesPage();
+        page = SearchPage();
         break;
       case 1:
         page = GeneratorPage();
@@ -109,13 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
         BottomNavigationBarItem(icon: Icon(Icons.person),label: 'my page',)
         ],
         currentIndex: selectedIndex,
-         onTap: (index) {
-          if (index == 0) {
-            context.read<MyAppState>().goToSearchScreen(context);
-          } else {
-            _onItemTapped(index);
-          }
-         },
+        onTap: _onItemTapped,
 
         ),
     );
@@ -164,6 +158,16 @@ class GeneratorPage extends StatelessWidget {
                   lineHeight: 15,
                   percent: 0.7,
                   center: Text('70%',),
+                  barRadius: Radius.circular(16.0),
+                  ),
+                  Text('수분'),
+                  LinearPercentIndicator(
+                  width: 130,
+                  animation: true,
+                  animationDuration: 1200,
+                  lineHeight: 15,
+                  percent: 0.5,
+                  center: Text('50%',),
                   barRadius: Radius.circular(16.0),
                   ),
                   Text('탄수화물'),
