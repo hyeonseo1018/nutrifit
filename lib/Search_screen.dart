@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 
 class SearchPage extends StatelessWidget {
+  
   final List<String> words = ['m-burger', 'c-burger', 'p-burger', 'l-burger'];
 
   @override
@@ -142,35 +143,18 @@ class DetailScreen extends StatelessWidget {
 
   DetailScreen({required this.word});
 
+ 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: 
-          Text(
-            'NutriFit',
-            style: TextStyle(fontSize: 30),
-          ),
+        
       ),
       body: Center(
         child: Text('Detail for $word'),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.manage_search),
-            label: 'search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'my page',
-          ),
-        ],
-      ),
+      
     );
   }
 }
