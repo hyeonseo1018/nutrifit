@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MaterialApp(
-    home: SearchPage(),
-  ));
-}
+
 
 class SearchPage extends StatelessWidget {
   final List<String> words = ['m-burger', 'c-burger', 'p-burger', 'l-burger'];
@@ -150,12 +146,11 @@ class DetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          child: Text(
+        title: 
+          Text(
             'NutriFit',
             style: TextStyle(fontSize: 30),
           ),
-        ),
       ),
       body: Center(
         child: Text('Detail for $word'),
