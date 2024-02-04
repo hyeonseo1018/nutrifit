@@ -1,8 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:nutrifit/Search_screen.dart';
 import 'package:nutrifit/Homepage.dart';
+import 'package:nutrifit/Search_screen.dart';
+import 'package:nutrifit/Mypage.dart';
 void main() {
   runApp(MyApp());
 }
@@ -39,7 +40,7 @@ class MyAppState extends ChangeNotifier {
     notifyListeners();
   }
 
-
+  
 
 }
 
@@ -56,29 +57,38 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
   
-  final _pages =  [SearchPage(),HomePage(),Placeholder()];
+  
+  final _pages =  [SearchPage(),HomePage(),Mypage()];
 
  
 
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
-      appBar: AppBar(title: Center(child: Text('NutriFit',style: TextStyle(fontSize: 30),))),
-      body: Navigator(
-        
-        onGenerateRoute: (routeSettings){
-        return MaterialPageRoute(builder: (context) => _pages[selectedIndex]);
-      },),
-      bottomNavigationBar: BottomNavigationBar(items: const <BottomNavigationBarItem> [
-        BottomNavigationBarItem(icon: Icon(Icons.manage_search),label: 'search',),
-        BottomNavigationBarItem(icon: Icon(Icons.home),label: 'home',),
-        BottomNavigationBarItem(icon: Icon(Icons.person),label: 'my page',)
-        ],
-        currentIndex: selectedIndex,
-        onTap: _onItemTapped,
-
-        ),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (bool didpop){
+        if(didpop){
+          return;
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(title: Center(child: Text('NutriFit',style: TextStyle(fontSize: 30),))),
+        body: Navigator(
+          
+          onGenerateRoute: (routeSettings){
+          return MaterialPageRoute(builder: (context) => _pages[selectedIndex]);
+        },),
+        bottomNavigationBar: BottomNavigationBar(items: const <BottomNavigationBarItem> [
+          BottomNavigationBarItem(icon: Icon(Icons.manage_search),label: 'search',),
+          BottomNavigationBarItem(icon: Icon(Icons.home),label: 'home',),
+          BottomNavigationBarItem(icon: Icon(Icons.person),label: 'my page',)
+          ],
+          currentIndex: selectedIndex,
+          onTap: _onItemTapped,
+      
+          ),
+      ),
     );
 
   }
