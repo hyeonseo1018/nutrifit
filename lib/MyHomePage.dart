@@ -34,11 +34,9 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       child: Scaffold(
         appBar: AppBar(title: Center(child: Text('NutriFit',style: TextStyle(fontSize: 30),))),
-        body: Navigator(
-          
-          onGenerateRoute: (routeSettings){
-          return MaterialPageRoute(builder: (context) => _pages[selectedIndex]);
-        },),
+        body: 
+          _pages[selectedIndex],
+     
         bottomNavigationBar: BottomNavigationBar(items: const <BottomNavigationBarItem> [
           BottomNavigationBarItem(icon: Icon(Icons.manage_search),label: 'search',),
           BottomNavigationBarItem(icon: Icon(Icons.home),label: 'home',),

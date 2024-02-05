@@ -4,6 +4,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:nutrifit/MyHomePage.dart';
 import 'main.dart';
+import 'package:get/get.dart';
+
 
 class Loginpage extends StatelessWidget{
 
@@ -53,8 +55,8 @@ class Loginpage extends StatelessWidget{
   @override
   Widget build(BuildContext context){
 
-    return Center(
-      child: Column(
+    return Scaffold(
+      body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
