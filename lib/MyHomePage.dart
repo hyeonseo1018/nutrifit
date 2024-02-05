@@ -33,7 +33,8 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: Center(child: Text('NutriFit',style: TextStyle(fontSize: 30),))),
+        appBar: AppBar(title: Center(child: Text('NutriFit',style: TextStyle(fontSize: 30),)),
+        automaticallyImplyLeading: false,),
         body: 
           _pages[selectedIndex],
      

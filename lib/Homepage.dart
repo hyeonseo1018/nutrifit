@@ -3,8 +3,20 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:nutrifit/main.dart';
 import 'package:nutrifit/data.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 class HomePage extends StatelessWidget {
+  Future<void> _info() async{
+    final response = await http.get(
+      Uri.parse('https://nutrifit-server-h52zonluwa-du.a.run.app/users/profile'),
+      headers:{
+        'Authorization':'Bearer ${await storage.read(key: 'jwtToken')}'
+      } );
+    Map<String, dynamic> dataMap = json.decode(response.body);
+    print(dataMap['muscle'].runtimeType);
+  }
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
@@ -87,7 +99,7 @@ class HomePage extends StatelessWidget {
               height: 7,
             ),
             SizedBox(height: 30,),
-            ElevatedButton(onPressed: (){fetchData();}, child: Text('불러오기')),
+            ElevatedButton(onPressed: (){_info();}, child: Text('불러오기')),
             SizedBox(width: double.infinity,child: Padding(
               padding: const EdgeInsets.only(left:16.0),
               child: Text('오늘 먹은 음식',textAlign: TextAlign.left,),

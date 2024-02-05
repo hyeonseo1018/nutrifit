@@ -43,19 +43,14 @@ class Loginpage extends StatelessWidget{
       print('로그인 실패: ${response.reasonPhrase}');
     }
   }
-  Future<void> _info() async{
-    final response = await http.get(
-      Uri.parse('https://nutrifit-server-h52zonluwa-du.a.run.app/users/profile'),
-      headers:{
-        'Authorization':'Bearer ${await storage.read(key: 'jwtToken')}'
-      } );
-    print(response.body);
-  }
+  
 
   @override
   Widget build(BuildContext context){
 
     return Scaffold(
+      appBar: AppBar(title: Center(child: Text('로그인하기'),),
+      automaticallyImplyLeading: false,),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -85,7 +80,7 @@ class Loginpage extends StatelessWidget{
               TextButton(onPressed: (){Navigator.push(context,MaterialPageRoute(builder: (context) =>  Signuppage()));}, child: Text('회원가입하기'))
             ],
           ),
-          ElevatedButton(onPressed: (){_info();}, child: Text('불러오기'))
+          
 
 
       ]),
