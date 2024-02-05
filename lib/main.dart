@@ -1,9 +1,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:nutrifit/Homepage.dart';
-import 'package:nutrifit/Search_screen.dart';
-import 'package:nutrifit/Mypage.dart';
+import 'package:nutrifit/Loginpage.dart';
+import 'package:nutrifit/MyHomePage.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+final storage = new FlutterSecureStorage();
 void main() {
   runApp(MyApp());
 }
@@ -21,7 +23,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
         ),
-        home: MyHomePage(),
+        home: SplashPage(),
       ),
     );
   }
@@ -41,58 +43,38 @@ class MyAppState extends ChangeNotifier {
   }
 
   
-
 }
 
-class MyHomePage extends StatefulWidget {
+class SplashPage extends StatefulWidget{
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _SplashPageState createState()=> _SplashPageState();
 }
-
-class _MyHomePageState extends State<MyHomePage> {
-  var selectedIndex = 1;
-  void _onItemTapped(int index) {
-    setState(() {
-      selectedIndex = index;
-    });
+class _SplashPageState extends State<SplashPage>{
+  @override
+  void initState(){
+    super.initState();
+    Future.delayed(Duration(seconds: 2),()=>_checkUser(context));
   }
-  
-  
-  final _pages =  [SearchPage(),HomePage(),Mypage()];
-
- 
-
   @override
-  Widget build(BuildContext context) {
-
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (bool didpop){
-        if(didpop){
-          return;
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(title: Center(child: Text('NutriFit',style: TextStyle(fontSize: 30),))),
-        body: Navigator(
-          
-          onGenerateRoute: (routeSettings){
-          return MaterialPageRoute(builder: (context) => _pages[selectedIndex]);
-        },),
-        bottomNavigationBar: BottomNavigationBar(items: const <BottomNavigationBarItem> [
-          BottomNavigationBarItem(icon: Icon(Icons.manage_search),label: 'search',),
-          BottomNavigationBarItem(icon: Icon(Icons.home),label: 'home',),
-          BottomNavigationBarItem(icon: Icon(Icons.person),label: 'my page',)
-          ],
-          currentIndex: selectedIndex,
-          onTap: _onItemTapped,
-      
-          ),
-      ),
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: Center(child: Text('Nutrifit')),
     );
-
+  }
+  void _checkUser(context) async{
+    
+    if(await storage.read(key: 'jwtToken') == null){
+      Navigator.push(context,MaterialPageRoute(builder: (context) =>  Loginpage()));
+      print('null');
+    }
+    else{
+      Navigator.push(context,MaterialPageRoute(builder: (context) =>  MyHomePage()));
+      print('nonnull');
+      print(await storage.read(key: 'jwtToken'));
+    }
   }
 }
+
 
 
   
