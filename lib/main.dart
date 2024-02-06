@@ -33,6 +33,7 @@ class MyAppState extends ChangeNotifier {
 
   var count = 0;
   var idcheckmessage = '';
+  var passwordchecker = '';
 
   void add() {
     count += 1;
@@ -42,14 +43,7 @@ class MyAppState extends ChangeNotifier {
     count -= 1;
     notifyListeners();
   }
-  void accept(){
-     idcheckmessage = '사용 가능한 아이디입니다';
-     notifyListeners();
-  }
-  void reject(){
-     idcheckmessage = '사용 불가능한 아이디입니다';
-     notifyListeners();
-  }
+
   
 }
 
