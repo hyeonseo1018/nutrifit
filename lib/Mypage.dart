@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'create_profile.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'main.dart';
@@ -92,7 +92,8 @@ class Mypage extends StatelessWidget {
                   onPressed: () {
                     delete(context);
                   },
-                  child: Text('로그아웃'))
+                  child: Text('로그아웃')),
+
             ]),
           );
         } else if (snapshot.hasError) {

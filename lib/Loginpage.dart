@@ -3,7 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:nutrifit/MyHomePage.dart';
 import 'main.dart';
-import 'package:get/get.dart';
+import 'create_profile.dart';
 import 'package:provider/provider.dart';
 
 class Loginpage extends StatelessWidget {
@@ -32,7 +32,7 @@ class Loginpage extends StatelessWidget {
       print('로그인 성공');
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => MyHomePage()));
-      // TODO: JWT 토큰을 저장하거나 다른 처리 수행
+      // JWT 토큰을 저장, 홈페이지로 진입
     } else {
       // 로그인 실패 시
       print('로그인 실패: ${response.reasonPhrase}');
@@ -115,7 +115,7 @@ class _SignuppageState extends State<Signuppage> {
   }
 
   Future<void> _signup(context) async {
-    final String url = 'https://nutrifit-server-h52zonluwa-du.a.run.app/signup';
+    final String url = 'https://nutrifit-server-h52zonluwa-du.a.run.app/users/signup';
     final Map<String, String> data = {
       'user_id': usernameController.text,
       'user_password': passwordController.text,
@@ -130,14 +130,14 @@ class _SignuppageState extends State<Signuppage> {
       print('회원가입을 다시 시도해 주세요 ${response.statusCode}');
     } else {
       print('회원가입 성공');
-      Navigator.push(context,MaterialPageRoute(builder: (context) =>  Loginpage()));
-      //navigator > 로그인 창으로 이동
+      Navigator.push(context,MaterialPageRoute(builder: (context) =>  create_profile(username: usernameController.text,)));
+      //navigator > create user's profile 창으로 이동
     }
   }
 
   Future<void> _idvalid(value) async {
     final String url =
-        'https://nutrifit-server-h52zonluwa-du.a.run.app/checkid';
+        'https://nutrifit-server-h52zonluwa-du.a.run.app/users/checkid';
     final Map<String, String> data = {
       'user_id': value,
     };
@@ -163,7 +163,7 @@ class _SignuppageState extends State<Signuppage> {
   }
   Future<void> _passwordvalid(value) async {
     final String url =
-        'https://nutrifit-server-h52zonluwa-du.a.run.app/checkpassword';
+        'https://nutrifit-server-h52zonluwa-du.a.run.app/users/checkpassword';
     final Map<String, String> data = {
       'user_password': value,
     };
@@ -179,7 +179,7 @@ class _SignuppageState extends State<Signuppage> {
     } else {
       // statuscode = 201
       print('사용 가능합니다');
-      idvalid = true;
+      passwordvalid = true;
     }
   }
 
