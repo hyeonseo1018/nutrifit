@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:nutrifit/Loginpage.dart';
@@ -17,10 +16,13 @@ class _create_profileState extends State<create_profile> {
   final TextEditingController heightcontroller = TextEditingController();
 
   Future<void> _createprofile(context) async {
-    final String url = 'https://nutrifit-server-h52zonluwa-du.a.run.app/users';
+    final String url = 'https://nutrifit-server-h52zonluwa-du.a.run.app/users/update';
+    final weight = double.parse(weightcontroller.text);
+    final height = double.parse(heightcontroller.text);
+
     final data = {
-      'height': double.parse(heightcontroller.text),
-      'weight': double.parse(weightcontroller.text),
+      'height': height,
+      'weight': weight,
       'age': 0,
       'activity': pal_value,
       'gender': gender_value,
@@ -35,6 +37,9 @@ class _create_profileState extends State<create_profile> {
     final http.Response response = await http.patch(
       Uri.parse(url),
       body: data,
+      headers: {
+          'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
+        }
     );
 
     if (response.statusCode != 201) {
@@ -177,6 +182,7 @@ class _create_profileState extends State<create_profile> {
                     } else {
                       print('필수 정보 입력 필요');
                     }
+                    
                   },
                   child: Text('회원가입 완료하기')),
             )
