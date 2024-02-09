@@ -6,32 +6,33 @@ import 'package:nutrifit/Loginpage.dart';
 import 'main.dart';
 
 class create_profile extends StatefulWidget {
-  String username = '';
-  create_profile({required this.username});
   @override
-  State<create_profile> createState() => _create_profileState(username : username);
+  State<create_profile> createState() => _create_profileState();
 }
 
 class _create_profileState extends State<create_profile> {
-  String username = '';
-  _create_profileState({required this.username});
   double pal_value = 1.2;
   String gender_value = '남';
   final TextEditingController weightcontroller = TextEditingController();
   final TextEditingController heightcontroller = TextEditingController();
 
   Future<void> _createprofile(context) async {
-    final String url =
-        'https://nutrifit-server-h52zonluwa-du.a.run.app/users/signup';
+    final String url = 'https://nutrifit-server-h52zonluwa-du.a.run.app/users';
     final data = {
-      'user_id': username,
+      'height': double.parse(heightcontroller.text),
+      'weight': double.parse(weightcontroller.text),
+      'age': 0,
+      'activity': pal_value,
       'gender': gender_value,
-      'weight': weightcontroller.text,
-      'height': heightcontroller.text,
-      'pal_value': pal_value,
+      "todays": "",
+      "today_energy": 0,
+      "today_water": 0,
+      "today_protein": 0,
+      "today_fat": 0,
+      "today_carbohydrate": 0
     };
 
-    final http.Response response = await http.post(
+    final http.Response response = await http.patch(
       Uri.parse(url),
       body: data,
     );

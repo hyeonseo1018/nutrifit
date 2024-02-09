@@ -5,7 +5,14 @@ import 'package:flutter/material.dart';
 import 'main.dart';
 import 'Loginpage.dart';
 
-class Mypage extends StatelessWidget {
+class Mypage extends StatefulWidget {
+  @override
+  State<Mypage> createState() => _MypageState();
+}
+
+class _MypageState extends State<Mypage> {
+  bool edit = false;
+
   Future<void> delete(context) async {
     await storage.deleteAll();
     Navigator.push(
@@ -43,58 +50,84 @@ class Mypage extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final list = jsonDecode(snapshot.data);
-          List<Map<String, String?>> data = [
-            {'label': '체수분', 'value': '${list["water"]} L'},
-            {'label': '단백질', 'value': '${list['protein']} kg'},
-            {'label': '무기질', 'value': '${list['mineral']} kg'},
-            {'label': '체지방', 'value': '${list['fat']} kg'},
-            {'label': '체중', 'value': '${list['weight']} kg'},
-            {'label': '골격근량', 'value': '${list['muscle']} kg'},
-          ];
+          final TextEditingController weightcontroller =
+              TextEditingController(text: list['water'] != null ? list['water'].toString() : '');//weight 로 변경
+          final TextEditingController heightcontroller =
+              TextEditingController();  // text: list['height']!.toString()
+
           return Center(
-            child: Column(children: [
-              Padding(
-                padding: const EdgeInsets.all(30.0),
-                child: Card(
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: Column(
-                      children: data.map((item) {
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              Container(
-                                width: double.infinity,
-                                color: Colors.white,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Text(item['label'] ?? ''),
-                                    Text(item['value'] ?? ''),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(height: 10),
-                            ],
+            child: SingleChildScrollView(
+              child: Column(children: [
+                ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        edit = !edit;
+                      });
+                    },
+                    child: edit == false ? Text('수정하기') : Text('완료하기')),
+                Padding(
+                  padding: const EdgeInsets.all(30.0),
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Container(
+                            color: Colors.white,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Text('체중'),
+                                SizedBox(
+                                  child: Row(
+                                    children: [
+                                      SizedBox(width: 30, child: TextField(
+                                        enabled: edit,
+                                        controller: weightcontroller,
+                                      )),
+                                      Text('kg')
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
-                        );
-                      }).toList(),
+                          SizedBox(height: 15,),
+                          Container(
+                            color: Colors.white,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Text('키'),
+                                SizedBox(
+                                  child: Row(
+                                    children: [
+                                      SizedBox(width: 30, child: TextField(
+                                        controller: heightcontroller,
+                                        enabled: edit,
+                                      )),
+                                      Text('cm')
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Card(
-                child: SizedBox(width: double.infinity),
-              ),
-              ElevatedButton(
-                  onPressed: () {
-                    delete(context);
-                  },
-                  child: Text('로그아웃')),
-
-            ]),
+                Card(
+                  child: SizedBox(width: double.infinity),
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      delete(context);
+                    },
+                    child: Text('로그아웃')),
+              ]),
+            ),
           );
         } else if (snapshot.hasError) {
           return Text('error');

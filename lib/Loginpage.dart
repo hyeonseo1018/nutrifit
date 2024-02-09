@@ -65,6 +65,7 @@ class Loginpage extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Card(
             child: TextField(
+              obscureText: true,
               controller: passwordController,
               decoration: InputDecoration(labelText: 'password'),
             ),
@@ -130,7 +131,7 @@ class _SignuppageState extends State<Signuppage> {
       print('회원가입을 다시 시도해 주세요 ${response.statusCode}');
     } else {
       print('회원가입 성공');
-      Navigator.push(context,MaterialPageRoute(builder: (context) =>  create_profile(username: usernameController.text,)));
+      Navigator.push(context,MaterialPageRoute(builder: (context) =>  create_profile()));
       //navigator > create user's profile 창으로 이동
     }
   }
@@ -148,12 +149,12 @@ class _SignuppageState extends State<Signuppage> {
     );
 
     if (response.statusCode != 201) {
+      idvalid = false;
       if(response.statusCode == 409){
         idcheckmessage = '이미 존재하는 아이디입니다';
       }else{
         idcheckmessage = '글자수가 맞지 않습니다.';
       }
-      idvalid = false;
       print(idvalid);
     } else {
       // statuscode = 201
@@ -201,9 +202,10 @@ class _SignuppageState extends State<Signuppage> {
                   errorText: idvalid ? null : "${idcheckmessage}",
                   errorBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.red))),
-              onChanged: (value) {
+              onChanged: (value) async{
+                await _idvalid(value);
                 setState(() {
-                  _idvalid(value);
+                  
                 });
               },
             ),
