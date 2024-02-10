@@ -5,14 +5,7 @@ import 'package:flutter/material.dart';
 import 'main.dart';
 import 'Loginpage.dart';
 
-class Mypage extends StatefulWidget {
-  @override
-  State<Mypage> createState() => _MypageState();
-}
-
-class _MypageState extends State<Mypage> {
-  bool edit = false;
-
+class Mypage extends StatelessWidget {
   Future<void> delete(context) async {
     await storage.deleteAll();
     Navigator.push(
@@ -50,83 +43,70 @@ class _MypageState extends State<Mypage> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final list = jsonDecode(snapshot.data);
-          final TextEditingController weightcontroller =
-              TextEditingController(text: list['water'] != null ? list['water'].toString() : '');//weight 로 변경
-          final TextEditingController heightcontroller =
-              TextEditingController();  // text: list['height']!.toString()
-
-          return Center(
-            child: SingleChildScrollView(
-              child: Column(children: [
-                ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        edit = !edit;
-                      });
-                    },
-                    child: edit == false ? Text('수정하기') : Text('완료하기')),
-                Padding(
-                  padding: const EdgeInsets.all(30.0),
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          Container(
-                            color: Colors.white,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                Text('체중'),
-                                SizedBox(
-                                  child: Row(
-                                    children: [
-                                      SizedBox(width: 30, child: TextField(
-                                        enabled: edit,
-                                        controller: weightcontroller,
-                                      )),
-                                      Text('kg')
-                                    ],
+          List<Map<String, String?>> data = [
+            {'label': '성별', 'value': '${list["gender"]}'},
+            {'label': '체중', 'value': '${list['weight']} kg'},
+            {'label': '키', 'value': '${list['height']} cm'},
+            {'label': '활동 정도', 'value': '${list['activity']}'},
+          ];
+          return Scaffold(
+            body: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                            onPressed: () {
+                              delete(context);
+                            },
+                            child: Text('로그아웃')),
+                        ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => create_profile(
+                                            navigator: 'tomypage',
+                                          )));
+                            },
+                            child: Text('수정하기'))
+                      ],
+                    ),
+                    Card(
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: Column(
+                          children: data.map((item) {
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    color: Colors.white,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Text(item['label'] ?? ''),
+                                        Text(item['value'] ?? ''),
+                                      ],
+                                    ),
                                   ),
-                                )
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 15,),
-                          Container(
-                            color: Colors.white,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                Text('키'),
-                                SizedBox(
-                                  child: Row(
-                                    children: [
-                                      SizedBox(width: 30, child: TextField(
-                                        controller: heightcontroller,
-                                        enabled: edit,
-                                      )),
-                                      Text('cm')
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                        ],
+                                  SizedBox(height: 10),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-                Card(
-                  child: SizedBox(width: double.infinity),
-                ),
-                ElevatedButton(
-                    onPressed: () {
-                      delete(context);
-                    },
-                    child: Text('로그아웃')),
-              ]),
+              ),
             ),
           );
         } else if (snapshot.hasError) {

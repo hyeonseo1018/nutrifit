@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:nutrifit/Search_Category_Detail_screen.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(MaterialApp(
@@ -28,15 +31,35 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   TextEditingController _searchController = TextEditingController();
   List<String>? _matchingWords;
+  List<dynamic>? data;
   TextEditingController _consumedAmountController = TextEditingController();
   double totalAmount = 100.0;
 
-  void _searchWords(String query) {
-    setState(() {
-      _matchingWords =
-          widget.words.where((word) => word.contains(query)).toList();
-    });
+  Future<void> search(String food_name, String group) async {
+    final String url =
+        'https://nutrifit-server-h52zonluwa-du.a.run.app/food/foodSearch';
+
+    final http.Response response = await http.get(
+      Uri.parse('${url}?food_name=${food_name}'),
+    );
+
+    if (response.statusCode == 200) {
+      
+      data = jsonDecode(response.body);
+      List<String> foodNames = [];
+      for (var item in data!) {
+        String foodName = item['food_name'];
+        foodNames.add(foodName);
+      }
+      setState(() {
+        _matchingWords = foodNames;
+      });
+
+    } else {
+      print('검색 실패: ${response.reasonPhrase}');
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -55,8 +78,11 @@ class _SearchScreenState extends State<SearchScreen> {
             TextField(
               controller: _searchController,
               decoration: InputDecoration(labelText: 'Search'),
-              onChanged: (query) {
-                _searchWords(query);
+              onChanged: (query) async {
+                await search(query, 'food');
+                setState(() {
+                  
+                });
               },
             ),
             Expanded(
@@ -76,7 +102,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             //     ),
                             //   ),
                             // );
-                            _showDetailDialog(_matchingWords![index]);
+                            _showDetailDialog(data![index]);
                           },
                         );
                       },
@@ -105,7 +131,14 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  void _showDetailDialog(String word) {
+  void _showDetailDialog(searchdata) {
+    // searchdata['food_name'] -> '음식 이름';
+    // searchdata['energy_kcal'] -> '칼로리';
+    // searchdata['water_g'] -> '수분';
+    // searchdata['protein_g'] -> '단백질';
+    // searchdata['fat_g'] -> '지방';
+    // searchdata['carbohydrate_g'] -> '탄수화물';
+    // 나머지 정보도 보려면 print(searchdata)하면 됨
     showDialog(
       context: context,
       builder: (BuildContext context) {

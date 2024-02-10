@@ -5,16 +5,20 @@ import 'package:nutrifit/Search_screen.dart';
 import 'mypage.dart';
 
 class MyHomePage extends StatefulWidget {
+  var selectedIndex = 1;
+  MyHomePage({required this.selectedIndex});
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState(selectedIndex : selectedIndex);
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 1;
+  _MyHomePageState({required this.selectedIndex});
   void _onItemTapped(int index) {
     setState(() {
       selectedIndex = index;
     });
+    widget.selectedIndex = selectedIndex;
   }
   
   

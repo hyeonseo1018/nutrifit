@@ -31,7 +31,7 @@ class Loginpage extends StatelessWidget {
       _saveToken(response.body);
       print('로그인 성공');
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => MyHomePage()));
+          context, MaterialPageRoute(builder: (context) => MyHomePage(selectedIndex: 1,)));
       // JWT 토큰을 저장, 홈페이지로 진입
     } else {
       // 로그인 실패 시
@@ -156,7 +156,7 @@ class _SignuppageState extends State<Signuppage> {
     } else {
       print('회원가입 성공');
       _login();
-      Navigator.push(context,MaterialPageRoute(builder: (context) =>  create_profile()));
+      Navigator.push(context,MaterialPageRoute(builder: (context) =>  create_profile(navigator: 'tologin',)));
       //navigator > create user's profile 창으로 이동
     }
   }
@@ -256,7 +256,7 @@ class _SignuppageState extends State<Signuppage> {
                     onChanged: (value) async{
                       await _passwordvalid(value);
                       setState(() {
-                        
+
                       });
                     },
                       
