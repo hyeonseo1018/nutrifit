@@ -97,9 +97,9 @@ class _create_profileState extends State<create_profile> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final list = jsonDecode(snapshot.data);
-            gender_value = list["gender"];
-            weightcontroller.text = list['weight'].toString();
-            heightcontroller.text = list['height'].toString();
+            gender_value = (list["gender"]??'');
+            weightcontroller.text = (list['weight']??'').toString();
+            heightcontroller.text = (list['height']?? '').toString();
             return Scaffold(
               appBar: AppBar(
                 title: Text('회원가입 정보 입력'),
