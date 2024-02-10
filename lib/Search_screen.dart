@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'main.dart';
 import 'package:flutter/material.dart';
 import 'package:nutrifit/Search_Category_Detail_screen.dart';
 import 'package:http/http.dart' as http;
@@ -54,12 +54,38 @@ class _SearchScreenState extends State<SearchScreen> {
       setState(() {
         _matchingWords = foodNames;
       });
-
     } else {
       print('검색 실패: ${response.reasonPhrase}');
     }
   }
 
+  Future<void> _add(searchdata,double totalAmount) async{
+    final String url_get =
+        'https://nutrifit-server-h52zonluwa-du.a.run.app/users/profile';
+    final String url_post =
+        'https://nutrifit-server-h52zonluwa-du.a.run.app/users/update';
+
+    final http.Response response_get =
+        await http.get(Uri.parse(url_post), headers: {
+      'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
+    }); 
+    Map<String, dynamic> dataMap = json.decode(response_get.body);
+    final data = {
+      "todays": dataMap['todays']+'/'+searchdata['food_name'],
+      "today_energy": dataMap['today_energy'] + searchdata['energy_kcal']*(totalAmount/100),
+      "today_water": dataMap['today_water']+searchdata['water_g']*(totalAmount/100),
+      "today_protein": dataMap['today_protein']+searchdata['protein_g']*(totalAmount/100),
+      "today_fat": dataMap['today_fat']+searchdata['fat_g']*(totalAmount/100),
+      "today_carbohydrate": dataMap['today_carbohydrate']+searchdata['carbohydrate_g']*(totalAmount/100),
+    };
+    String jsonString = json.encode(data);
+    final http.Response response_post =
+        await http.patch(Uri.parse(url_post), body: jsonString, headers: {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
+    });    
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,9 +106,7 @@ class _SearchScreenState extends State<SearchScreen> {
               decoration: InputDecoration(labelText: 'Search'),
               onChanged: (query) async {
                 await search(query, 'food');
-                setState(() {
-                  
-                });
+                setState(() {});
               },
             ),
             Expanded(
@@ -142,14 +166,13 @@ class _SearchScreenState extends State<SearchScreen> {
     // searchdata['carbohydrate_g'] -> '탄수화물';
     // 나머지 정보도 보려면 print(searchdata)하면 됨
     List<Map<String, String?>> data = [
-            {'label': '칼로리', 'value': '${searchdata["energy_kcal"]}kcal'},
-            {'label': '수분', 'value': '${searchdata['water_g']} g'},
-            {'label': '단백질', 'value': '${searchdata['protein_g']} g'},
-            {'label': '지방', 'value': '${searchdata['fat_g']} g'},
-            {'label': '탄수화물', 'value': '${searchdata['carbohydrate_g']} g'},
-          ];
+      {'label': '칼로리', 'value': '${searchdata["energy_kcal"]}kcal'},
+      {'label': '수분', 'value': '${searchdata['water_g']} g'},
+      {'label': '단백질', 'value': '${searchdata['protein_g']} g'},
+      {'label': '지방', 'value': '${searchdata['fat_g']} g'},
+      {'label': '탄수화물', 'value': '${searchdata['carbohydrate_g']} g'},
+    ];
     showDialog(
-
       context: context,
       builder: (BuildContext context) {
         return Dialog(
@@ -164,38 +187,41 @@ class _SearchScreenState extends State<SearchScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0,16.0,16.0,0),
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                    padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('${searchdata['food_name']}'),
-                        SizedBox(height: 10,),
+                        SizedBox(
+                          height: 10,
+                        ),
                         Text('1회 제공량 (100g) 당 함량'),
                       ],
                     ),
-                  ),//사진+음식이름
-                   //blank
+                  ), //사진+음식이름
+                  //blank
                   SizedBox(
-
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children:data.map((data){
-                      return Padding(
-                        padding: const EdgeInsets.fromLTRB(16.0,8.0,8.0,2.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('${data['label']}'),
-                            Text('${data['value']}')
-                          ],
-                        ),
-                      );
-                      }).toList())
-                  ), //영양 성분 정보
+                      child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: data.map((data) {
+                            return Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                  16.0, 8.0, 8.0, 2.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text('${data['label']}'),
+                                  Text('${data['value']}')
+                                ],
+                              ),
+                            );
+                          }).toList())), //영양 성분 정보
                   SizedBox(
                     height: 14,
                   ), //blank
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0,0,16.0,16.0),
+                    padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
                     child: Container(
                       decoration: BoxDecoration(
                         border: Border.all(
@@ -209,118 +235,113 @@ class _SearchScreenState extends State<SearchScreen> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                
-                                Text(
-                                        '총 섭취량',
-                                        style: TextStyle(fontSize: 15),
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Text(
+                                    '총 섭취량',
+                                    style: TextStyle(fontSize: 15),
+                                  ),
+                                  SizedBox(
+                                    width: 125,
+                                    height: 20,
+                                    child: TextField(
+                                      style: TextStyle(fontSize: 12),
+                                      controller: _consumedAmountController,
+                                      keyboardType: TextInputType.number,
+                                      decoration: InputDecoration(
+                                        hintText: '(1회 제공량 100g)',
+                                        contentPadding: EdgeInsets.symmetric(
+                                            vertical: 0, horizontal: 13),
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Colors.black,
+                                            width: 1.0,
+                                          ),
+                                        ),
                                       ),
-                                SizedBox(
-                                      width: 125,
-                                      height: 20,
-                                      child: TextField(
-                                        style: TextStyle(fontSize: 12),
-                                        controller:
-                                            _consumedAmountController,
-                                        keyboardType: TextInputType.number,
-                                        decoration: InputDecoration(
-                                          hintText: '(1회 제공량 100g)',
-                                          contentPadding:
-                                              EdgeInsets.symmetric(
-                                                  vertical: 0,
-                                                  horizontal: 13),
-                                          border: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Colors.black,
-                                              width: 1.0,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 10,
+                                        height: 20,
+                                        child: InkWell(
+                                          onTap: () {
+                                            // 버튼 클릭 시 totalAmount 변수 값 증가
+                                            setState(() {
+                                              totalAmount += 100;
+                                              _consumedAmountController.text =
+                                                  totalAmount.toString();
+                                            });
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.all(0),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(0),
+                                            ),
+                                            alignment: Alignment.center,
+                                            child: Icon(
+                                              Icons.arrow_drop_up,
+                                              size: 20,
+                                              color: Colors.red,
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 10,
-                                      height: 20,
-                                      child: InkWell(
-                                        onTap: () {
-                                          // 버튼 클릭 시 totalAmount 변수 값 증가
-                                          setState(() {
-                                            totalAmount += 100;
-                                            _consumedAmountController.text =
-                                                totalAmount.toString();
-                                          });
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.all(0),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(0),
-                                          ),
-                                          alignment: Alignment.center,
-                                          child: Icon(
-                                            Icons.arrow_drop_up,
-                                            size: 20,
-                                            color: Colors.red,
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                        height: 20,
+                                        child: InkWell(
+                                          onTap: () {
+                                            // 버튼 클릭 시 totalAmount 변수 값 증가
+                                            setState(() {
+                                              totalAmount -= 100;
+                                              _consumedAmountController.text =
+                                                  totalAmount.toString();
+                                            });
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.all(0),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(0),
+                                            ),
+                                            alignment: Alignment.center,
+                                            child: Icon(
+                                              Icons.arrow_drop_down,
+                                              size: 20,
+                                              color: Colors.red,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                    SizedBox(width: 5,),
-                                    SizedBox(
-                                                width: 10,
-                                                height: 20,
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    // 버튼 클릭 시 totalAmount 변수 값 증가
-                                                    setState(() {
-                                                      totalAmount -= 100;
-                                                      _consumedAmountController.text =
-                                                          totalAmount.toString();
-                                                    });
-                                                  },
-                                                  child: Container(
-                                                    padding: EdgeInsets.all(0),
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          BorderRadius.circular(0),
-                                                    ),
-                                                    alignment: Alignment.center,
-                                                    child: Icon(
-                                                      Icons.arrow_drop_down,
-                                                      size: 20,
-                                                      color: Colors.red,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                  ],
-                                ),
-                                ]
-                            ), 
+                                    ],
+                                  ),
+                                ]),
                             ElevatedButton(
-                              
-                                      onPressed: () {
-                                        //사용자가 입력한 값을 total Amount로 변환
-                                        setState(() {
-                                          totalAmount = double.tryParse(
-                                                  _consumedAmountController
-                                                      .text) ??
-                                              0.0;
-                                        });
-                                        //최종 totalAmount를 간직한채 Dialog를 닫음.
-                                        Navigator.pop(
-                                            context, totalAmount);
-                                      },
-                                      child: Text('추가하기',
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                          )),
-                                    ),
+                              onPressed: () {
+                                //사용자가 입력한 값을 total Amount로 변환
+                                setState(() {
+                                  totalAmount = double.tryParse(
+                                          _consumedAmountController.text) ??
+                                      0.0;
+                                });
+                                _add(searchdata,totalAmount);
+                                Navigator.pop(context);
+                              },
+                              child: Text('추가하기',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                  )),
+                            ),
                           ],
                         ),
                       ),
