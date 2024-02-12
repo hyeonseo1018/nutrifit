@@ -73,7 +73,7 @@ class _create_profileState extends State<create_profile> {
     }
   }
 
-  Future _info(int a) async {
+  Future _info() async {
     
     final response = await http.get(
         Uri.parse(
@@ -82,19 +82,20 @@ class _create_profileState extends State<create_profile> {
           'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
         });
     final set = jsonDecode(response.body);
-    if(a == 0){
+    
       gender_value = set['gender'];
+      //pal_value = set['activity'];
       agecontroller.text = set['age'].toString();
       weightcontroller.text = set['weight'].toString();
       heightcontroller.text = set['height'].toString();
-    }
+    
     return response.body;
   }
   @override
 
   void initState() {
     super.initState();
-    _info(0);
+    _info();
 
     
   }
@@ -112,13 +113,7 @@ class _create_profileState extends State<create_profile> {
       {'label': '활발한 활동(주5회 이상 강도 높은 운동)', 'value': 1.725},
       {'label': '매우 활동적임(주7회 강도 높은 운동)', 'value': 1.9},
     ];
-    return FutureBuilder(
-        future: _info(1),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final list = jsonDecode(snapshot.data);
-            
-            return Scaffold(
+   return Scaffold(
               appBar: AppBar(
                 title: Text('회원가입 정보 입력'),
                 automaticallyImplyLeading: false,
@@ -267,10 +262,5 @@ class _create_profileState extends State<create_profile> {
                 ),
               ),
             );
-          }else if (snapshot.hasError) {
-          return Text('error');
-        }
-        return CircularProgressIndicator();
-        });
   }
 }
