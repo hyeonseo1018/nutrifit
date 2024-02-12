@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage> {
         });
     return response.body;
   }
-  
+  //user profile 정보가 today랑 기본 정보로 나뉘어지면 initstate로 기본 정보 불러와서 bmr 구하기
 
   @override
   Widget build(BuildContext context) {

@@ -83,17 +83,19 @@ class _SearchScreenState extends State<SearchScreen> {
         'https://nutrifit-server-h52zonluwa-du.a.run.app/users/update';
 
     final http.Response response_get =
-        await http.get(Uri.parse(url_post), headers: {
+        await http.get(Uri.parse(url_get), headers: {
       'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
     }); 
     Map<String, dynamic> dataMap = json.decode(response_get.body);
     final data = {
-      "todays": (dataMap['todays']??'') +'/'+searchdata['food_name'],
-      "today_energy": (dataMap['today_energy']??'') + '${searchdata['energy_kcal']*(totalAmount/100)}',
-      "today_water": (dataMap['today_water']??'')+'${searchdata['water_g']*(totalAmount/100)}',
-      "today_protein": (dataMap['today_protein']??'')+'${searchdata['protein_g']*(totalAmount/100)}',
-      "today_fat": (dataMap['today_fat']??'')+'${searchdata['fat_g']*(totalAmount/100)}',
-      "today_carbohydrate": (dataMap['today_carbohydrate']??'')+'${searchdata['carbohydrate_g']*(totalAmount/100)}',
+      //서버 바뀌면 다시..
+      "todays": dataMap['todays'] +'/'+searchdata['food_name'],
+      "today_energy": dataMap['today_energy'] + '${searchdata['energy_kcal']*(totalAmount/100)}',
+      //아마 int랑 string이랑 더할려고 한다고 오류 날 듯..
+      "today_water": dataMap['today_water']+'${searchdata['water_g']*(totalAmount/100)}',
+      "today_protein": dataMap['today_protein']+'${searchdata['protein_g']*(totalAmount/100)}',
+      "today_fat": dataMap['today_fat']+'${searchdata['fat_g']*(totalAmount/100)}',
+      "today_carbohydrate": dataMap['today_carbohydrate']+'${searchdata['carbohydrate_g']*(totalAmount/100)}',
     };
     String jsonString = json.encode(data);
     final http.Response response_post =
@@ -101,6 +103,11 @@ class _SearchScreenState extends State<SearchScreen> {
       "Content-Type": "application/json",
       'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
     });    
+    if(response_post.statusCode != 200){
+      print('update 실패!${response_post.statusCode}');
+    }else{
+      print('update 성공!');
+    }
 
   }
 
@@ -143,7 +150,10 @@ class _SearchScreenState extends State<SearchScreen> {
                             //     ),
                             //   ),
                             // );
+                            
                             _showDetailDialog(data![index]);
+                            
+                            
                           },
                         );
                       },
@@ -174,7 +184,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void _showDetailDialog(searchdata) {
     _consumedAmountController = TextEditingController();
-    totalAmount = 0.0;
+    totalAmount = 100.0;
 
     
     // searchdata['food_name'] -> '음식 이름';
@@ -194,8 +204,9 @@ class _SearchScreenState extends State<SearchScreen> {
 
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return Dialog(
+      builder: (context) {
+        return StatefulBuilder(builder: (BuildContext context, StateSetter setState)
+        {return Dialog(
           child: Container(
               width: 300,
               decoration: BoxDecoration(
@@ -215,7 +226,8 @@ class _SearchScreenState extends State<SearchScreen> {
                         SizedBox(
                           height: 10,
                         ),
-                        Text('1회 제공량 (100g) 당 함량'),
+                        
+                        Text(totalAmount == 100.0?'1회 제공량 (100g) 당 함량': '(${totalAmount}g)당 함량'),
                       ],
                     ),
                   ), //사진+음식이름
@@ -225,7 +237,6 @@ class _SearchScreenState extends State<SearchScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: data.map((data) {
                             
-                            
                             return Padding(
                               padding: const EdgeInsets.fromLTRB(
                                   16.0, 8.0, 8.0, 2.0),
@@ -234,7 +245,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text('${data['label']}'),
-                                  Text('${data['value']}')
+                                  Text('${double.parse((data['value']!.split(' '))[0])*(totalAmount/100)}')
                                 ],
                               ),
                             );
@@ -282,6 +293,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                           ),
                                         ),
                                       ),
+                                      onSubmitted: (value) {
+                                        setState(() {
+                                          totalAmount = double.parse(value);
+                                        },);
+                                      },
                                     ),
                                   ),
                                   Row(
@@ -372,7 +388,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 ],
               )),
-        );
+        );});
       },
     );
   }
