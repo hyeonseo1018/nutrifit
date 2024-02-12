@@ -84,7 +84,11 @@ class _SearchScreenState extends State<SearchScreen> {
       "Content-Type": "application/json",
       'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
     });    
-
+    if (response_post.statusCode != 200){
+      print('추가하기 성공!');
+    }else{
+      print('추가하기 실패 ${response_post.statusCode}');
+    }
   }
 
   @override
