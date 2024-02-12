@@ -45,6 +45,7 @@ class Mypage extends StatelessWidget {
           final list = jsonDecode(snapshot.data);
           List<Map<String, String?>> data = [
             {'label': '성별', 'value': '${list["gender"]}'},
+            {'label': '나이', 'value': '${list["age"]} 세'},
             {'label': '체중', 'value': '${list['weight']} kg'},
             {'label': '키', 'value': '${list['height']} cm'},
             {'label': '활동 정도', 'value': '${list['activity']}'},

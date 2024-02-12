@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'main.dart';
 import 'package:flutter/material.dart';
@@ -35,28 +36,44 @@ class _SearchScreenState extends State<SearchScreen> {
   TextEditingController _consumedAmountController = TextEditingController();
   double totalAmount = 100.0;
 
+  Timer? _searchTimer;
+
   Future<void> search(String food_name, String group) async {
     final String url =
         'https://nutrifit-server-h52zonluwa-du.a.run.app/food/foodSearch';
 
     final http.Response response = await http.get(
-      Uri.parse('${url}?food_name=${food_name}'),
+      Uri.parse('${url}?food_name=${food_name}&DB_group=${group}'),
     );
 
     if (response.statusCode == 200) {
-      print(food_name);
-      data = jsonDecode(response.body);
+      setState(() {
+        data = jsonDecode(response.body);
+      });
       List<String> foodNames = [];
       for (var item in data!) {
         String foodName = item['food_name'];
         foodNames.add(foodName);
       }
       setState(() {
-        _matchingWords = foodNames;
+        _matchingWords = foodNames as List<String>;
       });
+
     } else {
       print('검색 실패: ${response.reasonPhrase}');
     }
+  }
+
+  void _searchWords(String query) {
+     // 이전 타이머가 있으면 취소
+    _searchTimer?.cancel();
+
+    // 새로운 타이머 시작
+    _searchTimer = Timer(Duration(milliseconds: 500), () {
+      print(query);
+      // 500ms 후에 search 함수 호출
+      search(query, '');
+    });
   }
 
   Future<void> _add(searchdata,double totalAmount) async{
@@ -71,12 +88,12 @@ class _SearchScreenState extends State<SearchScreen> {
     }); 
     Map<String, dynamic> dataMap = json.decode(response_get.body);
     final data = {
-      "todays": dataMap['todays']+'/'+searchdata['food_name'],
-      "today_energy": dataMap['today_energy'] + searchdata['energy_kcal']*(totalAmount/100),
-      "today_water": dataMap['today_water']+searchdata['water_g']*(totalAmount/100),
-      "today_protein": dataMap['today_protein']+searchdata['protein_g']*(totalAmount/100),
-      "today_fat": dataMap['today_fat']+searchdata['fat_g']*(totalAmount/100),
-      "today_carbohydrate": dataMap['today_carbohydrate']+searchdata['carbohydrate_g']*(totalAmount/100),
+      "todays": (dataMap['todays']??'') +'/'+searchdata['food_name'],
+      "today_energy": (dataMap['today_energy']??'') + '${searchdata['energy_kcal']*(totalAmount/100)}',
+      "today_water": (dataMap['today_water']??'')+'${searchdata['water_g']*(totalAmount/100)}',
+      "today_protein": (dataMap['today_protein']??'')+'${searchdata['protein_g']*(totalAmount/100)}',
+      "today_fat": (dataMap['today_fat']??'')+'${searchdata['fat_g']*(totalAmount/100)}',
+      "today_carbohydrate": (dataMap['today_carbohydrate']??'')+'${searchdata['carbohydrate_g']*(totalAmount/100)}',
     };
     String jsonString = json.encode(data);
     final http.Response response_post =
@@ -84,11 +101,7 @@ class _SearchScreenState extends State<SearchScreen> {
       "Content-Type": "application/json",
       'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
     });    
-    if (response_post.statusCode != 200){
-      print('추가하기 성공!');
-    }else{
-      print('추가하기 실패 ${response_post.statusCode}');
-    }
+
   }
 
   @override
@@ -109,7 +122,7 @@ class _SearchScreenState extends State<SearchScreen> {
               controller: _searchController,
               decoration: InputDecoration(labelText: 'Search'),
               onChanged: (query) async {
-                await search(query, 'food');
+                _searchWords(query);
                 setState(() {});
               },
             ),
@@ -162,6 +175,8 @@ class _SearchScreenState extends State<SearchScreen> {
   void _showDetailDialog(searchdata) {
     _consumedAmountController = TextEditingController();
     totalAmount = 0.0;
+
+    
     // searchdata['food_name'] -> '음식 이름';
     // searchdata['energy_kcal'] -> '칼로리';
     // searchdata['water_g'] -> '수분';
@@ -170,12 +185,13 @@ class _SearchScreenState extends State<SearchScreen> {
     // searchdata['carbohydrate_g'] -> '탄수화물';
     // 나머지 정보도 보려면 print(searchdata)하면 됨
     List<Map<String, String?>> data = [
-      {'label': '칼로리', 'value': '${searchdata["energy_kcal"]}kcal'},
+      {'label': '칼로리', 'value': '${searchdata["energy_kcal"]} kcal'},
       {'label': '수분', 'value': '${searchdata['water_g']} g'},
       {'label': '단백질', 'value': '${searchdata['protein_g']} g'},
       {'label': '지방', 'value': '${searchdata['fat_g']} g'},
       {'label': '탄수화물', 'value': '${searchdata['carbohydrate_g']} g'},
     ];
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -208,6 +224,8 @@ class _SearchScreenState extends State<SearchScreen> {
                       child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: data.map((data) {
+                            
+                            
                             return Padding(
                               padding: const EdgeInsets.fromLTRB(
                                   16.0, 8.0, 8.0, 2.0),
@@ -279,6 +297,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                               _consumedAmountController.text =
                                                   totalAmount.toString();
                                             });
+                                           
                                           },
                                           child: Container(
                                             padding: EdgeInsets.all(0),

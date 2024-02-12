@@ -21,8 +21,10 @@ class _create_profileState extends State<create_profile> {
 
   double pal_value = 1.2;
   String gender_value = '남';
+  TextEditingController agecontroller = TextEditingController();
   TextEditingController weightcontroller = TextEditingController();
   TextEditingController heightcontroller = TextEditingController();
+
 
   Future<void> _createprofile(context) async {
     final String url =
@@ -33,7 +35,7 @@ class _create_profileState extends State<create_profile> {
     final data = {
       'height': height,
       'weight': weight,
-      'age': 0,
+      'age': agecontroller.text,
       'activity': pal_value,
       'gender': gender_value,
       "todays": "",
@@ -50,11 +52,13 @@ class _create_profileState extends State<create_profile> {
       'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
     });
 
+
     if (response.statusCode != 200) {
       print('update를 다시 시도해 주세요 ${response.statusCode}');
     } else {
       print('update 성공');
       if (navigator == 'tologin') {
+        
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => Loginpage()));
       } else {
@@ -69,14 +73,30 @@ class _create_profileState extends State<create_profile> {
     }
   }
 
-  Future _info() async {
+  Future _info(int a) async {
+    
     final response = await http.get(
         Uri.parse(
             'https://nutrifit-server-h52zonluwa-du.a.run.app/users/profile'),
         headers: {
           'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
         });
+    final set = jsonDecode(response.body);
+    if(a == 0){
+      gender_value = set['gender'];
+      agecontroller.text = set['age'].toString();
+      weightcontroller.text = set['weight'].toString();
+      heightcontroller.text = set['height'].toString();
+    }
     return response.body;
+  }
+  @override
+
+  void initState() {
+    super.initState();
+    _info(0);
+
+    
   }
 
   @override
@@ -93,13 +113,11 @@ class _create_profileState extends State<create_profile> {
       {'label': '매우 활동적임(주7회 강도 높은 운동)', 'value': 1.9},
     ];
     return FutureBuilder(
-        future: _info(),
+        future: _info(1),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final list = jsonDecode(snapshot.data);
-            gender_value = (list["gender"]??'');
-            weightcontroller.text = (list['weight']??'').toString();
-            heightcontroller.text = (list['height']?? '').toString();
+            
             return Scaffold(
               appBar: AppBar(
                 title: Text('회원가입 정보 입력'),
@@ -136,7 +154,30 @@ class _create_profileState extends State<create_profile> {
                     SizedBox(
                       height: 30,
                     ),
-                    Text('   체중과 키 정보를 작성해주세요!'),
+                    Text('   나이, 체중, 키 정보를 작성해주세요!'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text('나이'),
+                        SizedBox(
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 60,
+                                child: TextField(
+                                  controller: agecontroller,
+                                  decoration: InputDecoration(
+                                      errorText: weightcontroller.text == ''
+                                          ? '필수 정보'
+                                          : null),
+                                ),
+                              ),
+                              Text('세')
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
