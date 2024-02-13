@@ -89,10 +89,8 @@ class _SearchScreenState extends State<SearchScreen> {
     }); 
     Map<String, dynamic> dataMap = json.decode(response_get.body);
     final data = {
-      //서버 바뀌면 다시..
-      "todays": dataMap['todays'] +'/'+searchdata['food_name'],
+      "todays": (dataMap['todays'] == ''? '': dataMap['todays'] + '/') +searchdata['food_name'],
       "today_energy": dataMap['today_energy'] + (double.parse(searchdata['energy_kcal'].toString())*(totalAmount/100)).floor(),
-      //아마 int랑 string이랑 더할려고 한다고 오류 날 듯..
       "today_water": dataMap['today_water']+(double.parse(searchdata['water_g'].toString())*(totalAmount/100)).floor(),
       "today_protein": dataMap['today_protein']+(double.parse(searchdata['protein_g'].toString())*(totalAmount/100)).floor(),
       "today_fat": dataMap['today_fat']+(double.parse(searchdata['fat_g'].toString())*(totalAmount/100)).floor(),

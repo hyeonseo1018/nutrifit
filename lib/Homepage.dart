@@ -30,9 +30,9 @@ class _HomePageState extends State<HomePage> {
         future: _info(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            final food_list = ['닭갈비', '치킨', '떡볶이', '짜장면'];
-            //jsonDecode((snapshot.data))['food_name'].split('/');
+            
             final list = jsonDecode(snapshot.data);
+            final food_list = list['todays'].split('/');
             List today_nu = [
               {'label': '열량', 'value': '${list['today_energy']}'},
               {'label': '수분', 'value': '${list['today_water']}'},

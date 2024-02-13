@@ -95,7 +95,7 @@ class _DetailPageState extends State<DetailPage> {
     }); 
     Map<String, dynamic> dataMap = json.decode(response_get.body);
     final data = {
-      "todays": dataMap['todays'] +'/'+searchdata['food_name'],
+      "todays": (dataMap['todays'] == ''? '': dataMap['todays'] + '/') +'/'+searchdata['food_name'],
       "today_energy": dataMap['today_energy'] + (double.parse(searchdata['energy_kcal'].toString())*(totalAmount/100)).floor(),
       "today_water": dataMap['today_water']+(double.parse(searchdata['water_g'].toString())*(totalAmount/100)).floor(),
       "today_protein": dataMap['today_protein']+(double.parse(searchdata['protein_g'].toString())*(totalAmount/100)).floor(),
