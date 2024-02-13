@@ -245,7 +245,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text('${data['label']}'),
-                                  Text('${double.parse((data['value']!.split(' '))[0])*(totalAmount/100)}')
+                                  Text('${double.parse((data['value']!.split(' '))[0])*(totalAmount/100)}' ' ${data['value']!.split(' ')[1]}')
                                 ],
                               ),
                             );
@@ -394,6 +394,7 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildGridBoxes() {
+    const items = ['농축산물', '수산물', '가공식품', '음식'];
     return GridView.builder(
       shrinkWrap: true,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -402,11 +403,12 @@ class _SearchScreenState extends State<SearchScreen> {
         mainAxisSpacing: 16.0,
       ),
       padding: EdgeInsets.all(24.0),
-      itemCount: ['농수산물', '수산물', '가공식품', '음식'].length,
+      itemCount: items.length,
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: () {
-            _navigateToDetailScreen(widget.words[index]);
+            print(items[index]);
+            _navigateToDetailScreen(items[index]);
           },
           child: Container(
             decoration: BoxDecoration(
@@ -416,13 +418,14 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
             padding: EdgeInsets.all(16.0),
             child: Center(
-              child: Text(['농수산물', '수산물', '가공식품', '음식'][index]),
+              child: Text(items[index]),
             ),
           ),
         );
       },
     );
   }
+
 
   // Widget _buildColoredBox(String word) {
   //   return Container(
