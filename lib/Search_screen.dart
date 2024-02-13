@@ -110,7 +110,6 @@ class _SearchScreenState extends State<SearchScreen> {
     }else{
       print('update 성공!');
       print(jsonString);
-      print(totalAmount);
     }
 
   }

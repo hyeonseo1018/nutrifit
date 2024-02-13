@@ -87,7 +87,7 @@ class _DetailPageState extends State<DetailPage> {
     final String url_get =
         'https://nutrifit-server-h52zonluwa-du.a.run.app/users/profile';
     final String url_post =
-        'https://nutrifit-server-h52zonluwa-du.a.run.app/users/update';
+        'https://nutrifit-server-h52zonluwa-du.a.run.app/users/update?todays';
 
     final http.Response response_get =
         await http.get(Uri.parse(url_post), headers: {
@@ -95,12 +95,12 @@ class _DetailPageState extends State<DetailPage> {
     }); 
     Map<String, dynamic> dataMap = json.decode(response_get.body);
     final data = {
-      "todays": dataMap['todays']+'/'+searchdata['food_name'],
-      "today_energy": dataMap['today_energy'] + searchdata['energy_kcal']*(totalAmount/100),
-      "today_water": dataMap['today_water']+searchdata['water_g']*(totalAmount/100),
-      "today_protein": dataMap['today_protein']+searchdata['protein_g']*(totalAmount/100),
-      "today_fat": dataMap['today_fat']+searchdata['fat_g']*(totalAmount/100),
-      "today_carbohydrate": dataMap['today_carbohydrate']+searchdata['carbohydrate_g']*(totalAmount/100),
+      "todays": dataMap['todays'] +'/'+searchdata['food_name'],
+      "today_energy": dataMap['today_energy'] + (double.parse(searchdata['energy_kcal'].toString())*(totalAmount/100)).floor(),
+      "today_water": dataMap['today_water']+(double.parse(searchdata['water_g'].toString())*(totalAmount/100)).floor(),
+      "today_protein": dataMap['today_protein']+(double.parse(searchdata['protein_g'].toString())*(totalAmount/100)).floor(),
+      "today_fat": dataMap['today_fat']+(double.parse(searchdata['fat_g'].toString())*(totalAmount/100)).floor(),
+      "today_carbohydrate": dataMap['today_carbohydrate']+(double.parse(searchdata['carbohydrate_g'].toString())*(totalAmount/100)).floor(),
     };
     String jsonString = json.encode(data);
     final http.Response response_post =
@@ -180,7 +180,7 @@ class _DetailPageState extends State<DetailPage> {
   }
 
    void _showDetailDialog(searchdata) {
-    _consumedAmountController = TextEditingController();
+    _consumedAmountController = TextEditingController(text: '100.0');
     totalAmount = 100.0;
 
     
