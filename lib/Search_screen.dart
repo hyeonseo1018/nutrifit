@@ -90,11 +90,11 @@ class _SearchScreenState extends State<SearchScreen> {
     Map<String, dynamic> dataMap = json.decode(response_get.body);
     final data = {
       "todays": (dataMap['todays'] == ''? '': dataMap['todays'] + '/') +searchdata['food_name'],
-      "today_energy": dataMap['today_energy'] + (double.parse(searchdata['energy_kcal'].toString())*(totalAmount/100)).floor(),
-      "today_water": dataMap['today_water']+(double.parse(searchdata['water_g'].toString())*(totalAmount/100)).floor(),
-      "today_protein": dataMap['today_protein']+(double.parse(searchdata['protein_g'].toString())*(totalAmount/100)).floor(),
-      "today_fat": dataMap['today_fat']+(double.parse(searchdata['fat_g'].toString())*(totalAmount/100)).floor(),
-      "today_carbohydrate": dataMap['today_carbohydrate']+(double.parse(searchdata['carbohydrate_g'].toString())*(totalAmount/100)).floor(),
+      "today_energy": dataMap['today_energy'] + (searchdata['energy_kcal']*(totalAmount/100)).floor(),
+      "today_water": dataMap['today_water']+(searchdata['water_g']*(totalAmount/100)).floor(),
+      "today_protein": dataMap['today_protein']+(searchdata['protein_g']*(totalAmount/100)).floor(),
+      "today_fat": dataMap['today_fat']+(searchdata['fat_g']*(totalAmount/100)).floor(),
+      "today_carbohydrate": dataMap['today_carbohydrate']+(searchdata['carbohydrate_g']*(totalAmount/100)).floor(),
     };
     String jsonString = json.encode(data);
     final http.Response response_post =
@@ -184,10 +184,12 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void _showDetailDialog(searchdata) {
-    _consumedAmountController = TextEditingController(text: '100.0');
-    totalAmount = 100.0;
-
     
+    double once = searchdata['once'].toDouble();
+    totalAmount = once;
+    _consumedAmountController = TextEditingController(text: '${totalAmount}');
+
+    // searchdata['once'] -> '1회 제공량';
     // searchdata['food_name'] -> '음식 이름';
     // searchdata['energy_kcal'] -> '칼로리';
     // searchdata['water_g'] -> '수분';
@@ -195,12 +197,11 @@ class _SearchScreenState extends State<SearchScreen> {
     // searchdata['fat_g'] -> '지방';
     // searchdata['carbohydrate_g'] -> '탄수화물';
     // 나머지 정보도 보려면 print(searchdata)하면 됨
-    List<Map<String, String?>> data = [
-      {'label': '칼로리', 'value': '${searchdata["energy_kcal"]} kcal'},
-      {'label': '수분', 'value': '${searchdata['water_g']} g'},
-      {'label': '단백질', 'value': '${searchdata['protein_g']} g'},
-      {'label': '지방', 'value': '${searchdata['fat_g']} g'},
-      {'label': '탄수화물', 'value': '${searchdata['carbohydrate_g']} g'},
+    List data = [
+      {'label': '칼로리', 'value': [searchdata["energy_kcal"] ,'kcal']},
+      {'label': '단백질', 'value': [searchdata['protein_g'], 'g']},
+      {'label': '지방', 'value': [searchdata['fat_g'], 'g']},
+      {'label': '탄수화물', 'value': [searchdata['carbohydrate_g'] ,'g']},
     ];
 
     showDialog(
@@ -228,7 +229,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           height: 10,
                         ),
                         
-                        Text(totalAmount == 100.0?'1회 제공량 (100g) 당 함량': '(${totalAmount}g)당 함량'),
+                        Text(totalAmount == once ?'1회 제공량(${once}g)당 함량':'${totalAmount}g (1회 제공량 * ${(totalAmount/once).toStringAsFixed(2)}) 당 함량'),
                       ],
                     ),
                   ), //사진+음식이름
@@ -238,7 +239,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: data.map((data) {
                             
-                            return Padding(
+                            if(data['value'][0] != -1){return Padding(
                               padding: const EdgeInsets.fromLTRB(
                                   16.0, 8.0, 8.0, 2.0),
                               child: Row(
@@ -246,10 +247,10 @@ class _SearchScreenState extends State<SearchScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text('${data['label']}'),
-                                  Text('${double.parse((data['value']!.split(' '))[0])*(totalAmount/100)}' ' ${data['value']!.split(' ')[1]}')
+                                  Text('${(data['value'][0]*(totalAmount/once)).toStringAsFixed(2)}' ' ${data['value'][1]}')
                                 ],
                               ),
-                            );
+                            );}else{return SizedBox(height: 0,);}
                           }).toList())), //영양 성분 정보
                   SizedBox(
                     height: 14,
@@ -310,7 +311,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                           onTap: () {
                                             // 버튼 클릭 시 totalAmount 변수 값 증가
                                             setState(() {
-                                              totalAmount += 100;
+                                              totalAmount += once;
                                               _consumedAmountController.text =
                                                   totalAmount.toString();
                                             });
@@ -342,7 +343,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                           onTap: () {
                                             // 버튼 클릭 시 totalAmount 변수 값 증가
                                             setState(() {
-                                              totalAmount -= 100;
+                                              totalAmount -= once;
                                               _consumedAmountController.text =
                                                   totalAmount.toString();
                                             });

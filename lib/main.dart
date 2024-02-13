@@ -6,7 +6,7 @@ import 'package:nutrifit/MyHomePage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 final storage = new FlutterSecureStorage();
-double bmr_value = 0.0;
+double tdee = 0.0;
 void main() {
   runApp(MyApp());
 }
