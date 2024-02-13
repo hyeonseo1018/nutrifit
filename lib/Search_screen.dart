@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'main.dart';
 import 'package:flutter/material.dart';
 import 'package:nutrifit/Search_Category_Detail_screen.dart';
@@ -80,7 +81,7 @@ class _SearchScreenState extends State<SearchScreen> {
     final String url_get =
         'https://nutrifit-server-h52zonluwa-du.a.run.app/users/profile';
     final String url_post =
-        'https://nutrifit-server-h52zonluwa-du.a.run.app/users/update';
+        'https://nutrifit-server-h52zonluwa-du.a.run.app/users/update/todays';
 
     final http.Response response_get =
         await http.get(Uri.parse(url_get), headers: {
@@ -90,12 +91,12 @@ class _SearchScreenState extends State<SearchScreen> {
     final data = {
       //서버 바뀌면 다시..
       "todays": dataMap['todays'] +'/'+searchdata['food_name'],
-      "today_energy": dataMap['today_energy'] + '${searchdata['energy_kcal']*(totalAmount/100)}',
+      "today_energy": dataMap['today_energy'] + (double.parse(searchdata['energy_kcal'].toString())*(totalAmount/100)).floor(),
       //아마 int랑 string이랑 더할려고 한다고 오류 날 듯..
-      "today_water": dataMap['today_water']+'${searchdata['water_g']*(totalAmount/100)}',
-      "today_protein": dataMap['today_protein']+'${searchdata['protein_g']*(totalAmount/100)}',
-      "today_fat": dataMap['today_fat']+'${searchdata['fat_g']*(totalAmount/100)}',
-      "today_carbohydrate": dataMap['today_carbohydrate']+'${searchdata['carbohydrate_g']*(totalAmount/100)}',
+      "today_water": dataMap['today_water']+(double.parse(searchdata['water_g'].toString())*(totalAmount/100)).floor(),
+      "today_protein": dataMap['today_protein']+(double.parse(searchdata['protein_g'].toString())*(totalAmount/100)).floor(),
+      "today_fat": dataMap['today_fat']+(double.parse(searchdata['fat_g'].toString())*(totalAmount/100)).floor(),
+      "today_carbohydrate": dataMap['today_carbohydrate']+(double.parse(searchdata['carbohydrate_g'].toString())*(totalAmount/100)).floor(),
     };
     String jsonString = json.encode(data);
     final http.Response response_post =
@@ -105,8 +106,11 @@ class _SearchScreenState extends State<SearchScreen> {
     });    
     if(response_post.statusCode != 200){
       print('update 실패!${response_post.statusCode}');
+      
     }else{
       print('update 성공!');
+      print(jsonString);
+      print(totalAmount);
     }
 
   }
@@ -183,7 +187,7 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void _showDetailDialog(searchdata) {
-    _consumedAmountController = TextEditingController();
+    _consumedAmountController = TextEditingController(text: '100.0');
     totalAmount = 100.0;
 
     

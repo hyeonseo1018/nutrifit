@@ -28,7 +28,7 @@ class _create_profileState extends State<create_profile> {
 
   Future<void> _createprofile(context) async {
     final String url =
-        'https://nutrifit-server-h52zonluwa-du.a.run.app/users/update';
+        'https://nutrifit-server-h52zonluwa-du.a.run.app/users/update/user';
     final weight = double.parse(weightcontroller.text);
     final height = double.parse(heightcontroller.text);
 
@@ -38,12 +38,7 @@ class _create_profileState extends State<create_profile> {
       'age': agecontroller.text,
       'activity': pal_value,
       'gender': gender_value,
-      "todays": "",
-      "today_energy": 0,
-      "today_water": 0,
-      "today_protein": 0,
-      "today_fat": 0,
-      "today_carbohydrate": 0
+      
     };
     String jsonString = json.encode(data);
     final http.Response response =
@@ -95,7 +90,9 @@ class _create_profileState extends State<create_profile> {
 
   void initState() {
     super.initState();
-    _info();
+    if(navigator == 'tologin'){Future.delayed(Duration(seconds: 1),()=>_info());}else{_info();}
+    
+    
 
     
   }
@@ -162,9 +159,14 @@ class _create_profileState extends State<create_profile> {
                                 child: TextField(
                                   controller: agecontroller,
                                   decoration: InputDecoration(
-                                      errorText: weightcontroller.text == ''
+                                      errorText: agecontroller.text == ''
                                           ? '필수 정보'
                                           : null),
+                                  onChanged: (value){
+                                    setState(() {
+                                      
+                                    });
+                                  },
                                 ),
                               ),
                               Text('세')
@@ -188,6 +190,11 @@ class _create_profileState extends State<create_profile> {
                                       errorText: weightcontroller.text == ''
                                           ? '필수 정보'
                                           : null),
+                                  onChanged: (value){
+                                    setState(() {
+                                      
+                                    });
+                                  },
                                 ),
                               ),
                               Text('kg')
@@ -208,9 +215,14 @@ class _create_profileState extends State<create_profile> {
                                 child: TextField(
                                   controller: heightcontroller,
                                   decoration: InputDecoration(
-                                      errorText: weightcontroller.text == ''
+                                      errorText: heightcontroller.text == ''
                                           ? '필수 정보'
                                           : null),
+                                  onChanged: (value){
+                                    setState(() {
+                                      
+                                    });
+                                  },
                                 ),
                               ),
                               Text('cm')
