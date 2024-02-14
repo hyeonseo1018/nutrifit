@@ -210,35 +210,38 @@ class _HomePageState extends State<HomePage> {
                               itemBuilder:
                                   (BuildContext context, int index) {
                                 if(food_list[index] != ''){return Card(
-                                  child: SizedBox(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            Text('${food_list[index]}'),
-                                            IconButton(
-                                              onPressed: () {
-                                                setState(() {
-                                                  food_list.removeAt(index);
-                                                  _delete(food_list[index]);
-                                                  print(food_list);
-                                                });
-                                              },
-                                              padding: EdgeInsets.zero,
-                                              visualDensity:
-                                                  VisualDensity.compact,
-                                              icon: Icon(Icons.close),
-                                              iconSize: 20,
-                                              color: Colors.red,
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          SizedBox(
+                                            width: 100,
+                                            child: Center(child: Text('${food_list[index].split('_')[0]}',overflow: TextOverflow.ellipsis,))),
+                                          IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                food_list.removeAt(index);
+                                                _delete(food_list[index]);
+                                                print(food_list);
+                                              });
+                                            },
+                                            padding: EdgeInsets.zero,
+                                            visualDensity:
+                                                VisualDensity.compact,
+                                            icon: Icon(Icons.close),
+                                            iconSize: 20,
+                                            color: Colors.red,
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 15,
+                                        child: ElevatedButton(onPressed: (){}, child: Text('자세히 보기',style: TextStyle(fontSize: 10),)))
+                                    ],
                                   ),
                                 );}else{return SizedBox(child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
