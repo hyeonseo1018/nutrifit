@@ -83,7 +83,7 @@ class _DetailPageState extends State<DetailPage> {
     });
   }
 
-  Future<void> _add(searchdata,double totalAmount) async{
+  Future<void> _add(searchdata,double totalAmount,double once) async{
     final String url_get =
         'https://nutrifit-server-h52zonluwa-du.a.run.app/users/profile';
     final String url_post =
@@ -95,12 +95,12 @@ class _DetailPageState extends State<DetailPage> {
     }); 
     Map<String, dynamic> dataMap = json.decode(response_get.body);
     final data = {
-      "todays": (dataMap['todays'] == ''? '': dataMap['todays'] + '/') +searchdata['food_name'],
-      "today_energy": dataMap['today_energy'] + (searchdata['energy_kcal']*(totalAmount/100)).floor(),
-      "today_water": dataMap['today_water']+(searchdata['water_g']*(totalAmount/100)).floor(),
-      "today_protein": dataMap['today_protein']+(searchdata['protein_g']*(totalAmount/100)).floor(),
-      "today_fat": dataMap['today_fat']+(searchdata['fat_g']*(totalAmount/100)).floor(),
-      "today_carbohydrate": dataMap['today_carbohydrate']+(searchdata['carbohydrate_g']*(totalAmount/100)).floor(),
+      "todays": (dataMap['todays'] == ''? '': dataMap['todays'] + '/') +'${searchdata['food_name']}_${searchdata['NO']}' ,
+      "today_energy": dataMap['today_energy'] + ((searchdata['energy_kcal'] == -1? 0 : searchdata['energy_kcal'])*(totalAmount/once)).floor(),
+      "today_water": dataMap['today_water']+((searchdata['water_g']== -1? 0:searchdata['water_g'])*(totalAmount/once)).floor(),
+      "today_protein": dataMap['today_protein']+((searchdata['protein_g'] == -1 ? 0:searchdata['protein_g'])*(totalAmount/once)).floor(),
+      "today_fat": dataMap['today_fat']+((searchdata['fat_g'] == -1?0:searchdata['fat_g'])*(totalAmount/once)).floor(),
+      "today_carbohydrate": dataMap['today_carbohydrate']+((searchdata['carbohydrate_g'] == -1 ? 0: searchdata['carbohydrate_g'])*(totalAmount/once)).floor(),
     };
     String jsonString = json.encode(data);
     final http.Response response_post =
@@ -180,8 +180,9 @@ class _DetailPageState extends State<DetailPage> {
   }
 
    void _showDetailDialog(searchdata) {
-    _consumedAmountController = TextEditingController(text: '100.0');
-    totalAmount = 100.0;
+    double once = searchdata['once'].toDouble();
+    totalAmount = once;
+    _consumedAmountController = TextEditingController(text: '${totalAmount}');
 
     
     // searchdata['food_name'] -> '음식 이름';
@@ -223,7 +224,7 @@ class _DetailPageState extends State<DetailPage> {
                           height: 10,
                         ),
                         
-                        Text(totalAmount == 100.0?'1회 제공량 (100g) 당 함량': '(${totalAmount}g)당 함량'),
+                        Text(totalAmount == once ?'1회 제공량(${once}g)당 함량':'${totalAmount}g (1회 제공량 * ${(totalAmount/once).toStringAsFixed(2)}) 당 함량'),
                       ],
                     ),
                   ), //사진+음식이름
@@ -241,7 +242,7 @@ class _DetailPageState extends State<DetailPage> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text('${data['label']}'),
-                                  Text('${(data['value'][0]*(totalAmount/100)).toStringAsFixed(2)}' ' ${data['value'][1]}')
+                                  Text('${(data['value'][0]*(totalAmount/once)).toStringAsFixed(2)}' ' ${data['value'][1]}')
                                 ],
                               ),
                             );
@@ -305,7 +306,7 @@ class _DetailPageState extends State<DetailPage> {
                                           onTap: () {
                                             // 버튼 클릭 시 totalAmount 변수 값 증가
                                             setState(() {
-                                              totalAmount += 100;
+                                              totalAmount += once;
                                               _consumedAmountController.text =
                                                   totalAmount.toString();
                                             });
@@ -337,7 +338,7 @@ class _DetailPageState extends State<DetailPage> {
                                           onTap: () {
                                             // 버튼 클릭 시 totalAmount 변수 값 증가
                                             setState(() {
-                                              totalAmount -= 100;
+                                              totalAmount -= once;
                                               _consumedAmountController.text =
                                                   totalAmount.toString();
                                             });
@@ -369,7 +370,7 @@ class _DetailPageState extends State<DetailPage> {
                                           _consumedAmountController.text) ??
                                       0.0;
                                 });
-                                _add(searchdata,totalAmount);
+                                _add(searchdata,totalAmount,once);
                                 Navigator.pop(context);
                               },
                               child: Text('추가하기',

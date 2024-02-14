@@ -6,6 +6,7 @@ import 'main.dart';
 import 'Loginpage.dart';
 
 class Mypage extends StatelessWidget {
+
   Future<void> delete(context) async {
     await storage.deleteAll();
     Navigator.push(
@@ -34,6 +35,23 @@ class Mypage extends StatelessWidget {
           'weight': '',
           'muscle': ''
         }));
+  }
+  Future singout(context) async{
+    final response = await http.delete(
+        Uri.parse(
+            'https://nutrifit-server-h52zonluwa-du.a.run.app/users/delete'),
+        headers: {
+          'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
+        });
+    if(response.statusCode != 200){
+      print('회원 탈퇴 실패!${response.statusCode}');
+    }else{
+      storage.deleteAll();
+      print('회원 탈퇴 완료');
+      Navigator.push(
+        context, MaterialPageRoute(builder: (context) => Loginpage()));
+
+    }
   }
 
   @override
@@ -105,6 +123,7 @@ class Mypage extends StatelessWidget {
                         ),
                       ),
                     ),
+                    ElevatedButton(onPressed: (){singout(context);}, child: Text('회원탈퇴'))
                   ],
                 ),
               ),

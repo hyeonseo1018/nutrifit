@@ -77,7 +77,7 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
-  Future<void> _add(searchdata,double totalAmount) async{
+  Future<void> _add(searchdata,double totalAmount,double once) async{
     final String url_get =
         'https://nutrifit-server-h52zonluwa-du.a.run.app/users/profile';
     final String url_post =
@@ -89,12 +89,12 @@ class _SearchScreenState extends State<SearchScreen> {
     }); 
     Map<String, dynamic> dataMap = json.decode(response_get.body);
     final data = {
-      "todays": (dataMap['todays'] == ''? '': dataMap['todays'] + '/') +searchdata['food_name'],
-      "today_energy": dataMap['today_energy'] + (searchdata['energy_kcal']*(totalAmount/100)).floor(),
-      "today_water": dataMap['today_water']+(searchdata['water_g']*(totalAmount/100)).floor(),
-      "today_protein": dataMap['today_protein']+(searchdata['protein_g']*(totalAmount/100)).floor(),
-      "today_fat": dataMap['today_fat']+(searchdata['fat_g']*(totalAmount/100)).floor(),
-      "today_carbohydrate": dataMap['today_carbohydrate']+(searchdata['carbohydrate_g']*(totalAmount/100)).floor(),
+      "todays": (dataMap['todays'] == ''? '': dataMap['todays'] + '/') +'${searchdata['food_name']}_${searchdata['NO']}' ,
+      "today_energy": dataMap['today_energy'] + ((searchdata['energy_kcal'] == -1? 0 : searchdata['energy_kcal'])*(totalAmount/once)).floor(),
+      "today_water": dataMap['today_water']+((searchdata['water_g']== -1? 0:searchdata['water_g'])*(totalAmount/once)).floor(),
+      "today_protein": dataMap['today_protein']+((searchdata['protein_g'] == -1 ? 0:searchdata['protein_g'])*(totalAmount/once)).floor(),
+      "today_fat": dataMap['today_fat']+((searchdata['fat_g'] == -1?0:searchdata['fat_g'])*(totalAmount/once)).floor(),
+      "today_carbohydrate": dataMap['today_carbohydrate']+((searchdata['carbohydrate_g'] == -1 ? 0: searchdata['carbohydrate_g'])*(totalAmount/once)).floor(),
     };
     String jsonString = json.encode(data);
     final http.Response response_post =
@@ -375,7 +375,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                           _consumedAmountController.text) ??
                                       0.0;
                                 });
-                                _add(searchdata,totalAmount);
+                                _add(searchdata,totalAmount,once);
                                 Navigator.pop(context);
                               },
                               child: Text('추가하기',

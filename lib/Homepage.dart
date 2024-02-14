@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:nutrifit/main.dart';
-import 'package:nutrifit/data.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
@@ -28,6 +27,7 @@ class _HomePageState extends State<HomePage> {
           5 * datalist['age'] +
           5;
       tdee = bmr_value * datalist['activity'];
+      print(tdee);
     } else {
       bmr_value = 10 * datalist['weight'] +
           6.25 * datalist['height'] -
@@ -40,7 +40,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future _delete(String food_name) async {}
-  //user profile 정보가 today랑 기본 정보로 나뉘어지면 initstate로 기본 정보 불러와서 bmr 구하기
 
   @override
   Widget build(BuildContext context) {
@@ -54,19 +53,19 @@ class _HomePageState extends State<HomePage> {
             List today_nu = [
               {
                 'label': '열량',
-                'value': [list['today_energy'], 1]
+                'value': [list['today_energy'],'kcal', 1,1]
               },
               {
                 'label': '단백질',
-                'value': [list['today_protein'], 0.14]
+                'value': [list['today_protein'],'g', 0.14,4]
               },
               {
                 'label': '지방',
-                'value': [list['today_fat'], 0.21]
+                'value': [list['today_fat'], 'g',0.21,9]
               },
               {
                 'label': '탄수화물',
-                'value': [list['today_carbohydrate'], 0.65]
+                'value': [list['today_carbohydrate'],'g', 0.65,4]
               },
             ];
 
@@ -132,7 +131,13 @@ class _HomePageState extends State<HomePage> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Text('${item['label']}'),
+                                            Row(
+                                              children: [
+                                                Text('${item['label']} '),
+                                                Text('${item['value'][0]}/${(tdee *item['value'][2]/item['value'][3]).floor()}',style: TextStyle(fontSize: 13),),
+                                                Text('(${item['value'][1]})',style: TextStyle(fontSize: 10),)
+                                              ],
+                                            ),
                                             SizedBox(
                                               height: 5,
                                             ),
@@ -142,22 +147,20 @@ class _HomePageState extends State<HomePage> {
                                               animation: true,
                                               animationDuration: 1200,
                                               lineHeight: 15,
-                                              percent: item['value'][0] /
-                                                          (tdee *
-                                                              item['value']
-                                                                  [1]) >
+                                              percent: item['value'][0] /(tdee *item['value'][2]/item['value'][3]) >
                                                       1
                                                   ? 1
-                                                  : item['value'][0] /
-                                                      (tdee *
-                                                          item['value'][1]),
+                                                  : item['value'][0] /(tdee *item['value'][2]/item['value'][3]),
                                               center: Text(
-                                                '${(item['value'][0] / (tdee * item['value'][1]) * 100).floor()}%',
+                                                '${(item['value'][0] / (tdee * item['value'][2]/item['value'][3]) * 100).floor()}%',
                                               ),
                                               linearGradient: LinearGradient(
                                                 colors: [
                                                   Colors.red,
-                                                  Colors.greenAccent
+                                                  Colors.orange,
+                                                  Colors.yellow,
+                                                  Colors.green,
+                                                  Colors.blue
                                                 ],
                                               ),
                                               clipLinearGradient: true,

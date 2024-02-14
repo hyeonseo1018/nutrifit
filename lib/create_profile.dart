@@ -79,10 +79,13 @@ class _create_profileState extends State<create_profile> {
     final set = jsonDecode(response.body);
     
       gender_value = set['gender'];
-      //pal_value = set['activity'];
-      agecontroller.text = set['age'].toString();
-      weightcontroller.text = set['weight'].toString();
-      heightcontroller.text = set['height'].toString();
+      pal_value = set['activity'];
+      agecontroller.text = (set['age'] == 0?'':set['age']).toString();
+      weightcontroller.text = (set['weight']==0?'':set['weight']).toString();
+      heightcontroller.text = (set['height']==0?'':set['height']).toString();
+      setState(() {
+        
+      });
     
     return response.body;
   }
@@ -91,7 +94,6 @@ class _create_profileState extends State<create_profile> {
   void initState() {
     super.initState();
     if(navigator == 'tologin'){Future.delayed(Duration(seconds: 1),()=>_info());}else{_info();}
-    
     
 
     
