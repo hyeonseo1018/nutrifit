@@ -5,6 +5,7 @@ import 'package:nutrifit/main.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
+import 'recommend_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -12,7 +13,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
   double bmr_value = 0.0;
+  Map<String, dynamic> food_data = {};
   Future _info() async {
     final response = await http.get(
         Uri.parse(
@@ -44,12 +47,12 @@ class _HomePageState extends State<HomePage> {
         'https://nutrifit-server-h52zonluwa-du.a.run.app/users/update/todaysfood';
 
     food_list.removeAt(index);
-    final data = {{'todays' : food_list.join(',')}};
+    final data = {'todaysfood' : food_list.join(',')};
     String jsonString = json.encode(data);
 
     final http.Response response =
         await http.patch(Uri.parse(url), body: jsonString, headers: {
-      "Content-Type": "application/json",
+
       'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
     }); 
     if(response.statusCode != 200){
@@ -60,6 +63,17 @@ class _HomePageState extends State<HomePage> {
         
       });
     }
+  }
+  Future food_info(food_list) async{
+    
+    final String url = 'https://nutrifit-server-h52zonluwa-du.a.run.app/food/todays';
+    final data = [{'todaysfood' : food_list}];
+    final http.Response response = await http.post(
+      Uri.parse(url),
+      body: json.encode(data),
+    );
+     food_data = jsonDecode(response.body);
+    
   }
 
   @override
@@ -230,7 +244,12 @@ class _HomePageState extends State<HomePage> {
                               itemCount: food_list.length,
                               itemBuilder:
                                   (BuildContext context, int index) {
-                                if(food_list[index] != ''){return Card(
+                                    
+                                    
+
+                                if(food_list[index] != ''){
+                                
+                                return Card(
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -241,11 +260,10 @@ class _HomePageState extends State<HomePage> {
                                         children: [
                                           SizedBox(
                                             width: 100,
-                                            child: Center(child: Text('${food_list[index].split('_')[0]}',overflow: TextOverflow.ellipsis,))),
+                                            child: Center(child: Text('${food_list[index].split('_')[2]}',overflow: TextOverflow.ellipsis,))),
                                           IconButton(
                                             onPressed: () {
                                               setState(() {
-                                                food_list.removeAt(index);
                                                 _delete(food_list,index);
                                                 print(food_list);
                                               });
@@ -261,7 +279,10 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                       SizedBox(
                                         height: 15,
-                                        child: ElevatedButton(onPressed: (){}, child: Text('자세히 보기',style: TextStyle(fontSize: 10),)))
+                                        child: ElevatedButton(onPressed: (){
+                                          food_info(food_list[index]);
+                                          
+                                        }, child: Text('자세히 보기',style: TextStyle(fontSize: 10),)))
                                     ],
                                   ),
                                 );}else{return SizedBox(child: Column(
@@ -280,6 +301,20 @@ class _HomePageState extends State<HomePage> {
                     Container(
                       color: Color.fromARGB(255, 211, 210, 210),
                       height: 7,
+                    ),
+                    SizedBox(
+                      height: 50,
+                      child: Center(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => RecommendPage()));
+                          },
+                          child: Text('추천 음식 보기'),
+                        ),
+                      ),
                     ),
                   ],
                 ),
