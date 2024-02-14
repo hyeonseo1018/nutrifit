@@ -81,7 +81,7 @@ class _SearchScreenState extends State<SearchScreen> {
     final String url_get =
         'https://nutrifit-server-h52zonluwa-du.a.run.app/users/profile';
     final String url_post =
-        'https://nutrifit-server-h52zonluwa-du.a.run.app/users/update/todays';
+        'https://nutrifit-server-h52zonluwa-du.a.run.app/users/update/todaysfood';
 
     final http.Response response_get =
         await http.get(Uri.parse(url_get), headers: {
@@ -89,12 +89,7 @@ class _SearchScreenState extends State<SearchScreen> {
     }); 
     Map<String, dynamic> dataMap = json.decode(response_get.body);
     final data = {
-      "todays": (dataMap['todays'] == ''? '': dataMap['todays'] + '/') +'${searchdata['food_name']}_${searchdata['NO']}' ,
-      "today_energy": dataMap['today_energy'] + ((searchdata['energy_kcal'] == -1? 0 : searchdata['energy_kcal'])*(totalAmount/once)).floor(),
-      "today_water": dataMap['today_water']+((searchdata['water_g']== -1? 0:searchdata['water_g'])*(totalAmount/once)).floor(),
-      "today_protein": dataMap['today_protein']+((searchdata['protein_g'] == -1 ? 0:searchdata['protein_g'])*(totalAmount/once)).floor(),
-      "today_fat": dataMap['today_fat']+((searchdata['fat_g'] == -1?0:searchdata['fat_g'])*(totalAmount/once)).floor(),
-      "today_carbohydrate": dataMap['today_carbohydrate']+((searchdata['carbohydrate_g'] == -1 ? 0: searchdata['carbohydrate_g'])*(totalAmount/once)).floor(),
+      "todays": (dataMap['todays'] == ''? '': dataMap['todays'] + ',') +'${searchdata['NO']}_${totalAmount}_${searchdata['food_name']}' ,
     };
     String jsonString = json.encode(data);
     final http.Response response_post =

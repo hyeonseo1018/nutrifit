@@ -39,7 +39,28 @@ class _HomePageState extends State<HomePage> {
     return response.body;
   }
 
-  Future _delete(String food_name) async {}
+  Future _delete(food_list,index) async {
+    final String url =
+        'https://nutrifit-server-h52zonluwa-du.a.run.app/users/update/todaysfood';
+
+    food_list.removeAt(index);
+    final data = {{'todays' : food_list.join(',')}};
+    String jsonString = json.encode(data);
+
+    final http.Response response =
+        await http.patch(Uri.parse(url), body: jsonString, headers: {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
+    }); 
+    if(response.statusCode != 200){
+      print('삭제 실패!${response.statusCode}');
+    }else{
+      print('삭제 성공');
+      setState(() {
+        
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +70,7 @@ class _HomePageState extends State<HomePage> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final list = jsonDecode(snapshot.data);
-            final food_list = list['todays'].split('/');
+            final food_list = list['todays'].split(',');
             List today_nu = [
               {
                 'label': '열량',
@@ -225,7 +246,7 @@ class _HomePageState extends State<HomePage> {
                                             onPressed: () {
                                               setState(() {
                                                 food_list.removeAt(index);
-                                                _delete(food_list[index]);
+                                                _delete(food_list,index);
                                                 print(food_list);
                                               });
                                             },
