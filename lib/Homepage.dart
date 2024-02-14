@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
 
     final http.Response response =
         await http.patch(Uri.parse(url), body: jsonString, headers: {
-
+      "Content-Type": "application/json",
       'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
     }); 
     if(response.statusCode != 200){
@@ -75,6 +75,7 @@ class _HomePageState extends State<HomePage> {
      food_data = jsonDecode(response.body);
     
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -310,7 +311,9 @@ class _HomePageState extends State<HomePage> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => RecommendPage()));
+                                    builder: (context) => RecommendScreen(todays : list['todays']))).then((value){setState(() {
+                                      
+                                    });});
                           },
                           child: Text('추천 음식 보기'),
                         ),
