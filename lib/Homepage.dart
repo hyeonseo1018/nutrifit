@@ -64,15 +64,56 @@ class _HomePageState extends State<HomePage> {
       });
     }
   }
-  Future food_info(food_list) async{
+  Future<void> _add(searchdata,double totalAmount,index) async{
+    final String url_get =
+        'https://nutrifit-server-h52zonluwa-du.a.run.app/users/profile';
+    final String url_post =
+        'https://nutrifit-server-h52zonluwa-du.a.run.app/users/update/todaysfood';
+
+    final http.Response response_get =
+        await http.get(Uri.parse(url_get), headers: {
+      'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
+    }); 
+    Map<String, dynamic> dataMap = json.decode(response_get.body);
+    List food = dataMap['todays'].split(',');
+    food[index] = '${searchdata.split('_')[0]}_${totalAmount}_${searchdata.split('_')[2]}';
+    final data = {
+      "todaysfood": food.join(',') ,
+    };
+    String jsonString = json.encode(data);
+    final http.Response response_post =
+        await http.patch(Uri.parse(url_post), body: jsonString, headers: {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
+    });    
+    if(response_post.statusCode != 200){
+      print('update 실패!${response_post.statusCode}');
+      
+    }else{
+      print('update 성공!');
+      setState(() {
+        
+      });
+      print(jsonString);
+    }
+
+  }
+  Future food_info(String food_list) async{
     
     final String url = 'https://nutrifit-server-h52zonluwa-du.a.run.app/food/todays';
-    final data = [{'todaysfood' : food_list}];
+    final data = {'todaysfood' : food_list};
     final http.Response response = await http.post(
       Uri.parse(url),
       body: json.encode(data),
+      headers: {"Content-Type": "application/json"}
     );
-     food_data = jsonDecode(response.body);
+    if(response.statusCode == 201){
+        print(response.body);
+        return response.body;
+    }else{
+      print('실패${response.statusCode}');
+    }
+     
     
   }
 
@@ -281,7 +322,7 @@ class _HomePageState extends State<HomePage> {
                                       SizedBox(
                                         height: 15,
                                         child: ElevatedButton(onPressed: (){
-                                          food_info(food_list[index]);
+                                          _showDetailDialog(food_list[index],index);
                                           
                                         }, child: Text('자세히 보기',style: TextStyle(fontSize: 10),)))
                                     ],
@@ -329,87 +370,218 @@ class _HomePageState extends State<HomePage> {
           return CircularProgressIndicator();
         });
   }
-}
+  void _showDetailDialog(String searchdata , index) {
+    
+    double once = double.parse(searchdata.split('_')[1]);
+    double totalAmount = double.parse(searchdata.split('_')[1]);
+    TextEditingController _consumedAmountController = TextEditingController(text: '${totalAmount}');
 
-class SecondRoute extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
+    
 
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('M-burger 의 성분'),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Card(
-              child: Container(
-            width: double.infinity,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
+    showDialog(
+      context: context,
+      builder: (context) {
+        return FutureBuilder(future: food_info(searchdata),
+         builder: (context,snapshot){
+          if(snapshot.hasData){
+              final food_info = jsonDecode(snapshot.data);
+              List data = [
+      {'label': '칼로리', 'value': [food_info["energy_kcal"] ,'kcal']},
+      {'label': '단백질', 'value': [food_info['protein_g'], 'g']},
+      {'label': '지방', 'value': [food_info['fat_g'], 'g']},
+      {'label': '탄수화물', 'value': [food_info['carbohydrate_g'] ,'g']},
+    ];
+    return StatefulBuilder(builder: (BuildContext context, StateSetter setState)
+        {return Dialog(
+          child: Container(
+              width: 300,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
               child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: 50,
-                    ),
-                    Text(
-                      '열량 :',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    Text(
-                      '탄수화물 :',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    Text(
-                      '단백질 :',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    Text(
-                      '지방 :',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    Text(
-                      '당 :',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    SizedBox(
-                      height: 50,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                            width: 30,
-                            height: 30,
-                            color: const Color.fromARGB(255, 215, 209, 209),
-                            child: IconButton(
-                                onPressed: () {
-                                  appState.add();
-                                },
-                                padding: EdgeInsets.zero,
-                                constraints: BoxConstraints(),
-                                icon: Icon(Icons.add))),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(appState.count.toString()),
+                        Text('${searchdata.split('_')[2]}'),
+                        SizedBox(
+                          height: 10,
                         ),
-                        Container(
-                            width: 30,
-                            height: 30,
-                            color: const Color.fromARGB(255, 215, 209, 209),
-                            child: IconButton(
-                                onPressed: () {
-                                  appState.sub();
-                                },
-                                padding: EdgeInsets.zero,
-                                constraints: BoxConstraints(),
-                                icon: Icon(Icons.remove)))
+                        
+                        Text('${totalAmount}g 당 함량'),
                       ],
                     ),
-                  ]),
-            ),
-          )),
-        ));
+                  ), //사진+음식이름
+                  //blank
+                  SizedBox(
+                      child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: data.map((data) {
+                            
+                            if(data['value'][0] != -1){return Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                  16.0, 8.0, 8.0, 2.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text('${data['label']}'),
+                                  Text('${(data['value'][0]*(totalAmount/once)).toStringAsFixed(2)}' ' ${data['value'][1]}')
+                                ],
+                              ),
+                            );}else{return SizedBox(height: 0,);}
+                          }).toList())), //영양 성분 정보
+                  SizedBox(
+                    height: 14,
+                  ), //blank
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.black,
+                          width: 1,
+                        ),
+                      ),
+                      child: SizedBox(
+                        width: 250,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Text(
+                                    '총 섭취량',
+                                    style: TextStyle(fontSize: 15),
+                                  ),
+                                  SizedBox(
+                                    width: 125,
+                                    height: 20,
+                                    child: TextField(
+                                      style: TextStyle(fontSize: 12),
+                                      controller: _consumedAmountController,
+                                      keyboardType: TextInputType.number,
+                                      decoration: InputDecoration(
+                                        hintText: '(1회 제공량 100g)',
+                                        contentPadding: EdgeInsets.symmetric(
+                                            vertical: 0, horizontal: 13),
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Colors.black,
+                                            width: 1.0,
+                                          ),
+                                        ),
+                                      ),
+                                      onSubmitted: (value) {
+                                        setState(() {
+                                          totalAmount = double.parse(value);
+                                        },);
+                                      },
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 10,
+                                        height: 20,
+                                        child: InkWell(
+                                          onTap: () {
+                                            // 버튼 클릭 시 totalAmount 변수 값 증가
+                                            setState(() {
+                                              totalAmount += once;
+                                              _consumedAmountController.text =
+                                                  totalAmount.toString();
+                                            });
+                                           
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.all(0),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(0),
+                                            ),
+                                            alignment: Alignment.center,
+                                            child: Icon(
+                                              Icons.arrow_drop_up,
+                                              size: 20,
+                                              color: Colors.red,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                        height: 20,
+                                        child: InkWell(
+                                          onTap: () {
+                                            // 버튼 클릭 시 totalAmount 변수 값 증가
+                                            setState(() {
+                                              totalAmount -= once;
+                                              _consumedAmountController.text =
+                                                  totalAmount.toString();
+                                            });
+                                          },
+                                          child: Container(
+                                            padding: EdgeInsets.all(0),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(0),
+                                            ),
+                                            alignment: Alignment.center,
+                                            child: Icon(
+                                              Icons.arrow_drop_down,
+                                              size: 20,
+                                              color: Colors.red,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ]),
+                            ElevatedButton(
+                              onPressed: () {
+                                //사용자가 입력한 값을 total Amount로 변환
+                                setState(() {
+                                  totalAmount = double.tryParse(
+                                          _consumedAmountController.text) ??
+                                      0.0;
+                                });
+                                _add(searchdata,totalAmount,index);
+                                Navigator.pop(context);
+                              },
+                              child: Text('수정하기',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                  )),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              )),
+        );});
+          }else if (snapshot.hasError) {
+            return Text('error');
+          }
+          return CircularProgressIndicator();
+         });
+      },
+    );
   }
 }
+
