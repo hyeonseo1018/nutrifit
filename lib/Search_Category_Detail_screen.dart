@@ -95,7 +95,7 @@ class _DetailPageState extends State<DetailPage> {
     }); 
     Map<String, dynamic> dataMap = json.decode(response_get.body);
     final data = {
-      "todaysfood": (dataMap['todays'] == ''? '': dataMap['todays'] + ',') +'${searchdata['NO']}_${totalAmount}_${searchdata['food_name']}' ,
+      "todaysfood": (dataMap['todays'] == ''? '': dataMap['todays'] + ',') +'${searchdata['NO']}_${totalAmount}_${searchdata['food_name']}_${searchdata['once']}' ,
     };
     String jsonString = json.encode(data);
     final http.Response response_post =

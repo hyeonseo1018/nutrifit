@@ -132,7 +132,7 @@ class Mypage extends StatelessWidget {
         } else if (snapshot.hasError) {
           return Text('error');
         }
-        return CircularProgressIndicator();
+        return Center(child: CircularProgressIndicator(color: Colors.grey,));
       },
     );
   }

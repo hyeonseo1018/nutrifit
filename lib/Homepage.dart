@@ -76,7 +76,7 @@ class _HomePageState extends State<HomePage> {
     }); 
     Map<String, dynamic> dataMap = json.decode(response_get.body);
     List food = dataMap['todays'].split(',');
-    food[index] = '${searchdata.split('_')[0]}_${totalAmount}_${searchdata.split('_')[2]}';
+    food[index] = '${searchdata.split('_')[0]}_${totalAmount}_${searchdata.split('_')[2]}_${searchdata.split('_')[3]}';
     final data = {
       "todaysfood": food.join(',') ,
     };
@@ -367,12 +367,12 @@ class _HomePageState extends State<HomePage> {
           } else if (snapshot.hasError) {
             return Text('error');
           }
-          return CircularProgressIndicator();
+          return Center(child: CircularProgressIndicator(color: Colors.grey,));
         });
   }
   void _showDetailDialog(String searchdata , index) {
     
-    double once = double.parse(searchdata.split('_')[1]);
+    double once = double.parse(searchdata.split('_')[3]);
     double totalAmount = double.parse(searchdata.split('_')[1]);
     TextEditingController _consumedAmountController = TextEditingController(text: '${totalAmount}');
 
@@ -408,12 +408,26 @@ class _HomePageState extends State<HomePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('${searchdata.split('_')[2]}'),
+                        Row(
+                          children: [
+                            Text('${searchdata.split('_')[2]}',style: TextStyle(fontWeight: FontWeight.bold),),
+                            SizedBox(width: 7,),
+                            Text('(현재 섭취량 : ${searchdata.split('_')[1]}g)',style: TextStyle(fontSize: 13),)
+                          ],
+                        ),
                         SizedBox(
                           height: 10,
                         ),
+
                         
-                        Text('${totalAmount}g 당 함량'),
+                        Row(
+                          children: [
+                            Text('${totalAmount}g'),
+                            Text('(1회 제공량*${(totalAmount/once).toStringAsFixed(2)})',style: TextStyle(fontSize: 10)),
+                            Text('당 함량'),
+                          ],
+                        ),
+                        
                       ],
                     ),
                   ), //사진+음식이름
@@ -431,6 +445,7 @@ class _HomePageState extends State<HomePage> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text('${data['label']}'),
+                                  
                                   Text('${(data['value'][0]*(totalAmount/once)).toStringAsFixed(2)}' ' ${data['value'][1]}')
                                 ],
                               ),
@@ -469,7 +484,7 @@ class _HomePageState extends State<HomePage> {
                                       controller: _consumedAmountController,
                                       keyboardType: TextInputType.number,
                                       decoration: InputDecoration(
-                                        hintText: '(1회 제공량 100g)',
+                                        hintText: '(1회 제공량 ${once}g)',
                                         contentPadding: EdgeInsets.symmetric(
                                             vertical: 0, horizontal: 13),
                                         border: OutlineInputBorder(
@@ -578,7 +593,7 @@ class _HomePageState extends State<HomePage> {
           }else if (snapshot.hasError) {
             return Text('error');
           }
-          return CircularProgressIndicator();
+          return Center(child: CircularProgressIndicator(color: Colors.grey,));
          });
       },
     );
