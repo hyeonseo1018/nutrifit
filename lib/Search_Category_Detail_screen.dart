@@ -140,7 +140,13 @@ class _DetailPageState extends State<DetailPage> {
                       itemCount: _matchingWords!.length,
                       itemBuilder: (context, index) {
                         return ListTile(
-                          title: Text(_matchingWords![index]),
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(child: Text(_matchingWords![index],overflow: TextOverflow.ellipsis,)),
+                              Text(data![index]['region'],style: TextStyle(fontSize: 10),)
+                            ],
+                          ),
                           onTap: () {
                             _showDetailDialog(data![index]);
                           },

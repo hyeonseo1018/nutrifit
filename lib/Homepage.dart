@@ -13,7 +13,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   double bmr_value = 0.0;
   Map<String, dynamic> food_data = {};
   Future _info() async {
@@ -42,81 +41,72 @@ class _HomePageState extends State<HomePage> {
     return response.body;
   }
 
-  Future _delete(food_list,index) async {
+  Future _delete(food_list, index) async {
     final String url =
         'https://nutrifit-server-h52zonluwa-du.a.run.app/users/update/todaysfood';
 
     food_list.removeAt(index);
-    final data = {'todaysfood' : food_list.join(',')};
+    final data = {'todaysfood': food_list.join(',')};
     String jsonString = json.encode(data);
 
     final http.Response response =
         await http.patch(Uri.parse(url), body: jsonString, headers: {
       "Content-Type": "application/json",
       'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
-    }); 
-    if(response.statusCode != 200){
+    });
+    if (response.statusCode != 200) {
       print('삭제 실패!${response.statusCode}');
-    }else{
+    } else {
       print('삭제 성공');
-      setState(() {
-        
-      });
+      setState(() {});
     }
   }
-  Future<void> _add(searchdata,double totalAmount,index) async{
+
+  Future<void> _add(searchdata, double totalAmount, index) async {
     final String url_get =
         'https://nutrifit-server-h52zonluwa-du.a.run.app/users/profile';
     final String url_post =
         'https://nutrifit-server-h52zonluwa-du.a.run.app/users/update/todaysfood';
 
-    final http.Response response_get =
-        await http.get(Uri.parse(url_get), headers: {
-      'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
-    }); 
+    final http.Response response_get = await http.get(Uri.parse(url_get),
+        headers: {
+          'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
+        });
     Map<String, dynamic> dataMap = json.decode(response_get.body);
     List food = dataMap['todays'].split(',');
-    food[index] = '${searchdata.split('_')[0]}_${totalAmount}_${searchdata.split('_')[2]}_${searchdata.split('_')[3]}';
+    food[index] =
+        '${searchdata.split('_')[0]}_${totalAmount}_${searchdata.split('_')[2]}_${searchdata.split('_')[3]}';
     final data = {
-      "todaysfood": food.join(',') ,
+      "todaysfood": food.join(','),
     };
     String jsonString = json.encode(data);
     final http.Response response_post =
         await http.patch(Uri.parse(url_post), body: jsonString, headers: {
       "Content-Type": "application/json",
       'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
-    });    
-    if(response_post.statusCode != 200){
+    });
+    if (response_post.statusCode != 200) {
       print('update 실패!${response_post.statusCode}');
-      
-    }else{
+    } else {
       print('update 성공!');
-      setState(() {
-        
-      });
+      setState(() {});
       print(jsonString);
     }
-
   }
-  Future food_info(String food_list) async{
-    
-    final String url = 'https://nutrifit-server-h52zonluwa-du.a.run.app/food/todays';
-    final data = {'todaysfood' : food_list};
-    final http.Response response = await http.post(
-      Uri.parse(url),
-      body: json.encode(data),
-      headers: {"Content-Type": "application/json"}
-    );
-    if(response.statusCode == 201){
-        print(response.body);
-        return response.body;
-    }else{
+
+  Future food_info(String food_list) async {
+    final String url =
+        'https://nutrifit-server-h52zonluwa-du.a.run.app/food/todays';
+    final data = {'todaysfood': food_list};
+    final http.Response response = await http.post(Uri.parse(url),
+        body: json.encode(data), headers: {"Content-Type": "application/json"});
+    if (response.statusCode == 201) {
+      print(response.body);
+      return response.body;
+    } else {
       print('실패${response.statusCode}');
     }
-     
-    
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -130,19 +120,19 @@ class _HomePageState extends State<HomePage> {
             List today_nu = [
               {
                 'label': '열량',
-                'value': [list['today_energy'],'kcal', 1,1]
+                'value': [list['today_energy'], 'kcal', 1, 1]
               },
               {
                 'label': '단백질',
-                'value': [list['today_protein'],'g', 0.14,4]
+                'value': [list['today_protein'], 'g', 0.14, 4]
               },
               {
                 'label': '지방',
-                'value': [list['today_fat'], 'g',0.21,9]
+                'value': [list['today_fat'], 'g', 0.21, 9]
               },
               {
                 'label': '탄수화물',
-                'value': [list['today_carbohydrate'],'g', 0.65,4]
+                'value': [list['today_carbohydrate'], 'g', 0.65, 4]
               },
             ];
 
@@ -165,9 +155,9 @@ class _HomePageState extends State<HomePage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text('kcal',
-                                    style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w300)),
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w300)),
                                     Text(
                                       '${(list['today_energy'] / tdee * 100).floor()}%',
                                       style: const TextStyle(
@@ -180,8 +170,7 @@ class _HomePageState extends State<HomePage> {
                               CircularStepProgressIndicator(
                                 totalSteps: 100,
                                 currentStep:
-                                    (list['today_energy'] / tdee * 100)
-                                        .floor(),
+                                    (list['today_energy'] / tdee * 100).floor(),
                                 stepSize: 10,
                                 selectedColor: Colors.greenAccent,
                                 unselectedColor: Colors.grey[200],
@@ -211,8 +200,16 @@ class _HomePageState extends State<HomePage> {
                                             Row(
                                               children: [
                                                 Text('${item['label']} '),
-                                                Text('${item['value'][0]}/${(tdee *item['value'][2]/item['value'][3]).floor()}',style: TextStyle(fontSize: 13),),
-                                                Text('(${item['value'][1]})',style: TextStyle(fontSize: 10),)
+                                                Text(
+                                                  '${item['value'][0]}/${(tdee * item['value'][2] / item['value'][3]).floor()}',
+                                                  style:
+                                                      TextStyle(fontSize: 13),
+                                                ),
+                                                Text(
+                                                  '(${item['value'][1]})',
+                                                  style:
+                                                      TextStyle(fontSize: 10),
+                                                )
                                               ],
                                             ),
                                             SizedBox(
@@ -224,12 +221,19 @@ class _HomePageState extends State<HomePage> {
                                               animation: true,
                                               animationDuration: 1200,
                                               lineHeight: 15,
-                                              percent: item['value'][0] /(tdee *item['value'][2]/item['value'][3]) >
+                                              percent: item['value'][0] /
+                                                          (tdee *
+                                                              item['value'][2] /
+                                                              item['value']
+                                                                  [3]) >
                                                       1
                                                   ? 1
-                                                  : item['value'][0] /(tdee *item['value'][2]/item['value'][3]),
+                                                  : item['value'][0] /
+                                                      (tdee *
+                                                          item['value'][2] /
+                                                          item['value'][3]),
                                               center: Text(
-                                                '${(item['value'][0] / (tdee * item['value'][2]/item['value'][3]) * 100).floor()}%',
+                                                '${(item['value'][0] / (tdee * item['value'][2] / item['value'][3]) * 100).floor()}%',
                                               ),
                                               linearGradient: LinearGradient(
                                                 colors: [
@@ -241,8 +245,7 @@ class _HomePageState extends State<HomePage> {
                                                 ],
                                               ),
                                               clipLinearGradient: true,
-                                              barRadius:
-                                                  Radius.circular(16.0),
+                                              barRadius: Radius.circular(16.0),
                                             ),
                                           ],
                                         ));
@@ -279,60 +282,159 @@ class _HomePageState extends State<HomePage> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: SizedBox(
-                          height: 150,
+                          height: 160,
                           child: ListView.builder(
                               scrollDirection: Axis.horizontal,
                               shrinkWrap: true,
                               itemCount: food_list.length,
-                              itemBuilder:
-                                  (BuildContext context, int index) {
-                                    
-                                    
-
-                                if(food_list[index] != ''){
-                                
-                                return Card(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          SizedBox(
-                                            width: 100,
-                                            child: Center(child: Text('${food_list[index].split('_')[2]}',overflow: TextOverflow.ellipsis,))),
-                                          IconButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                _delete(food_list,index);
-                                                print(food_list);
-                                              });
+                              itemBuilder: (BuildContext context, int index) {
+                                if (food_list[index] != '') {
+                                  return FutureBuilder(
+                                      future: food_info(food_list[index]),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasData) {
+                                          final mylist =
+                                              jsonDecode(snapshot.data);
+                                          List map_mylist = [
+                                            {
+                                              'label': '열량',
+                                              'value': [
+                                                mylist['energy_kcal'],
+                                                'kcal'
+                                              ]
                                             },
-                                            padding: EdgeInsets.zero,
-                                            visualDensity:
-                                                VisualDensity.compact,
-                                            icon: Icon(Icons.close),
-                                            iconSize: 20,
-                                            color: Colors.red,
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: 15,
-                                        child: ElevatedButton(onPressed: (){
-                                          _showDetailDialog(food_list[index],index);
-                                          
-                                        }, child: Text('자세히 보기',style: TextStyle(fontSize: 10),)))
+                                            {
+                                              'label': '단백질',
+                                              'value': [
+                                                mylist['protein_g'],
+                                                'g'
+                                              ]
+                                            },
+                                            {
+                                              'label': '지방',
+                                              'value': [mylist['fat_g'], 'g']
+                                            },
+                                            {
+                                              'label': '탄수화물',
+                                              'value': [
+                                                mylist['carbohydrate_g'],
+                                                'g'
+                                              ]
+                                            },
+                                          ];
+                                          return Card(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      8.0, 0.0, 8.0, 0.0),
+                                              child: SizedBox(
+                                                width: 150,
+                                                child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Flexible(
+                                                          child: Text(
+                                                            '${food_list[index].split('_')[2]}',
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                        ),
+                                                        IconButton(
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              _delete(food_list,
+                                                                  index);
+                                                              print(food_list);
+                                                            });
+                                                          },
+                                                          padding:
+                                                              EdgeInsets.zero,
+                                                          visualDensity:
+                                                              VisualDensity
+                                                                  .compact,
+                                                          icon:
+                                                              Icon(Icons.close),
+                                                          iconSize: 20,
+                                                          color: Colors.red,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: map_mylist
+                                                            .map((data) {
+                                                          if (data['value']
+                                                                  [0] !=
+                                                              -1) {
+                                                            return Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceBetween,
+                                                              children: [
+                                                                Text(
+                                                                    '${data['label']} : '),
+                                                                Text(
+                                                                    '${data['value'][0]} ${data['value'][1]}')
+                                                              ],
+                                                            );
+                                                          } else {
+                                                            return SizedBox(
+                                                              height: 0,
+                                                            );
+                                                          }
+                                                        }).toList()),
+                                                    SizedBox(
+                                                      height: 5,
+                                                    ),
+                                                    SizedBox(
+                                                        height: 15,
+                                                        child: ElevatedButton(
+                                                            onPressed: () {
+                                                              _showDetailDialog(
+                                                                  food_list[
+                                                                      index],
+                                                                  index);
+                                                            },
+                                                            child: Text(
+                                                              '자세히 보기',
+                                                              style: TextStyle(
+                                                                  fontSize: 10),
+                                                            )))
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        } else if (snapshot.hasError) {
+                                          return Text('error');
+                                        } else if (index == 1) {
+                                          return Center(
+                                              child: CircularProgressIndicator(
+                                            color: Colors.grey,
+                                          ));
+                                        }
+                                        return SizedBox();
+                                      });
+                                } else {
+                                  return SizedBox(
+                                      child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('오늘 섭취한 음식이 없어요!'),
                                     ],
-                                  ),
-                                );}else{return SizedBox(child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text('오늘 섭취한 음식이 없어요!'),
-                                  ],
-                                ));}
+                                  ));
+                                }
                               }),
                         ),
                       ),
@@ -352,9 +454,10 @@ class _HomePageState extends State<HomePage> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => RecommendScreen(todays : list['todays']))).then((value){setState(() {
-                                      
-                                    });});
+                                    builder: (context) => RecommendScreen(
+                                        todays: list['todays']))).then((value) {
+                              setState(() {});
+                            });
                           },
                           child: Text('추천 음식 보기'),
                         ),
@@ -367,236 +470,290 @@ class _HomePageState extends State<HomePage> {
           } else if (snapshot.hasError) {
             return Text('error');
           }
-          return Center(child: CircularProgressIndicator(color: Colors.grey,));
+          return Center(
+              child: CircularProgressIndicator(
+            color: Colors.grey,
+          ));
         });
   }
-  void _showDetailDialog(String searchdata , index) {
-    
+
+  void _showDetailDialog(String searchdata, index) {
     double once = double.parse(searchdata.split('_')[3]);
     double totalAmount = double.parse(searchdata.split('_')[1]);
-    TextEditingController _consumedAmountController = TextEditingController(text: '${totalAmount}');
-
-    
+    TextEditingController _consumedAmountController =
+        TextEditingController(text: '${totalAmount}');
 
     showDialog(
       context: context,
       builder: (context) {
-        return FutureBuilder(future: food_info(searchdata),
-         builder: (context,snapshot){
-          if(snapshot.hasData){
-              final food_info = jsonDecode(snapshot.data);
-              List data = [
-      {'label': '칼로리', 'value': [food_info["energy_kcal"] ,'kcal']},
-      {'label': '단백질', 'value': [food_info['protein_g'], 'g']},
-      {'label': '지방', 'value': [food_info['fat_g'], 'g']},
-      {'label': '탄수화물', 'value': [food_info['carbohydrate_g'] ,'g']},
-    ];
-    return StatefulBuilder(builder: (BuildContext context, StateSetter setState)
-        {return Dialog(
-          child: Container(
-              width: 300,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text('${searchdata.split('_')[2]}',style: TextStyle(fontWeight: FontWeight.bold),),
-                            SizedBox(width: 7,),
-                            Text('(현재 섭취량 : ${searchdata.split('_')[1]}g)',style: TextStyle(fontSize: 13),)
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-
-                        
-                        Row(
-                          children: [
-                            Text('${totalAmount}g'),
-                            Text('(1회 제공량*${(totalAmount/once).toStringAsFixed(2)})',style: TextStyle(fontSize: 10)),
-                            Text('당 함량'),
-                          ],
-                        ),
-                        
-                      ],
-                    ),
-                  ), //사진+음식이름
-                  //blank
-                  SizedBox(
-                      child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: data.map((data) {
-                            
-                            if(data['value'][0] != -1){return Padding(
-                              padding: const EdgeInsets.fromLTRB(
-                                  16.0, 8.0, 8.0, 2.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text('${data['label']}'),
-                                  
-                                  Text('${(data['value'][0]*(totalAmount/once)).toStringAsFixed(2)}' ' ${data['value'][1]}')
-                                ],
-                              ),
-                            );}else{return SizedBox(height: 0,);}
-                          }).toList())), //영양 성분 정보
-                  SizedBox(
-                    height: 14,
-                  ), //blank
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
+        return FutureBuilder(
+            future: food_info(searchdata),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final food_info = jsonDecode(snapshot.data);
+                List data = [
+                  {
+                    'label': '칼로리',
+                    'value': [food_info["energy_kcal"], 'kcal']
+                  },
+                  {
+                    'label': '단백질',
+                    'value': [food_info['protein_g'], 'g']
+                  },
+                  {
+                    'label': '지방',
+                    'value': [food_info['fat_g'], 'g']
+                  },
+                  {
+                    'label': '탄수화물',
+                    'value': [food_info['carbohydrate_g'], 'g']
+                  },
+                ];
+                return StatefulBuilder(
+                    builder: (BuildContext context, StateSetter setState) {
+                  return Dialog(
                     child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.black,
-                          width: 1,
+                        width: 300,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
                         ),
-                      ),
-                      child: SizedBox(
-                        width: 250,
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                  16.0, 16.0, 16.0, 0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    '총 섭취량',
-                                    style: TextStyle(fontSize: 15),
-                                  ),
-                                  SizedBox(
-                                    width: 125,
-                                    height: 20,
-                                    child: TextField(
-                                      style: TextStyle(fontSize: 12),
-                                      controller: _consumedAmountController,
-                                      keyboardType: TextInputType.number,
-                                      decoration: InputDecoration(
-                                        hintText: '(1회 제공량 ${once}g)',
-                                        contentPadding: EdgeInsets.symmetric(
-                                            vertical: 0, horizontal: 13),
-                                        border: OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: Colors.black,
-                                            width: 1.0,
-                                          ),
-                                        ),
-                                      ),
-                                      onSubmitted: (value) {
-                                        setState(() {
-                                          totalAmount = double.parse(value);
-                                        },);
-                                      },
-                                    ),
-                                  ),
                                   Row(
                                     children: [
-                                      SizedBox(
-                                        width: 10,
-                                        height: 20,
-                                        child: InkWell(
-                                          onTap: () {
-                                            // 버튼 클릭 시 totalAmount 변수 값 증가
-                                            setState(() {
-                                              totalAmount += once;
-                                              _consumedAmountController.text =
-                                                  totalAmount.toString();
-                                            });
-                                           
-                                          },
-                                          child: Container(
-                                            padding: EdgeInsets.all(0),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(0),
-                                            ),
-                                            alignment: Alignment.center,
-                                            child: Icon(
-                                              Icons.arrow_drop_up,
-                                              size: 20,
-                                              color: Colors.red,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                        height: 20,
-                                        child: InkWell(
-                                          onTap: () {
-                                            // 버튼 클릭 시 totalAmount 변수 값 증가
-                                            setState(() {
-                                              totalAmount -= once;
-                                              _consumedAmountController.text =
-                                                  totalAmount.toString();
-                                            });
-                                          },
-                                          child: Container(
-                                            padding: EdgeInsets.all(0),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(0),
-                                            ),
-                                            alignment: Alignment.center,
-                                            child: Icon(
-                                              Icons.arrow_drop_down,
-                                              size: 20,
-                                              color: Colors.red,
-                                            ),
-                                          ),
+                                      Flexible(
+                                        child: Text(
+                                          '${searchdata.split('_')[2]}',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
                                         ),
                                       ),
                                     ],
                                   ),
-                                ]),
-                            ElevatedButton(
-                              onPressed: () {
-                                //사용자가 입력한 값을 total Amount로 변환
-                                setState(() {
-                                  totalAmount = double.tryParse(
-                                          _consumedAmountController.text) ??
-                                      0.0;
-                                });
-                                _add(searchdata,totalAmount,index);
-                                Navigator.pop(context);
-                              },
-                              child: Text('수정하기',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                  )),
+                                  SizedBox(
+                                    width: 7,
+                                  ),
+                                  Text(
+                                        '(현재 섭취량 : ${searchdata.split('_')[1]}g)',
+                                        style: TextStyle(fontSize: 13),
+                                      ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text('${totalAmount}g'),
+                                      Text(
+                                          '(1회 제공량*${(totalAmount / once).toStringAsFixed(2)})',
+                                          style: TextStyle(fontSize: 10)),
+                                      Text('당 함량'),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ), //사진+음식이름
+                            //blank
+                            SizedBox(
+                                child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: data.map((data) {
+                                      if (data['value'][0] != -1) {
+                                        return Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              16.0, 8.0, 8.0, 2.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text('${data['label']}'),
+                                              Text(
+                                                  '${(data['value'][0] * (totalAmount / once)).toStringAsFixed(2)}'
+                                                  ' ${data['value'][1]}')
+                                            ],
+                                          ),
+                                        );
+                                      } else {
+                                        return SizedBox(
+                                          height: 0,
+                                        );
+                                      }
+                                    }).toList())), //영양 성분 정보
+                            SizedBox(
+                              height: 14,
+                            ), //blank
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                  16.0, 0, 16.0, 16.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.black,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: SizedBox(
+                                  width: 250,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: [
+                                            Text(
+                                              '총 섭취량',
+                                              style: TextStyle(fontSize: 15),
+                                            ),
+                                            SizedBox(
+                                              width: 125,
+                                              height: 20,
+                                              child: TextField(
+                                                style: TextStyle(fontSize: 12),
+                                                controller:
+                                                    _consumedAmountController,
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                decoration: InputDecoration(
+                                                  hintText: '(1회 제공량 ${once}g)',
+                                                  contentPadding:
+                                                      EdgeInsets.symmetric(
+                                                          vertical: 0,
+                                                          horizontal: 13),
+                                                  border: OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                      color: Colors.black,
+                                                      width: 1.0,
+                                                    ),
+                                                  ),
+                                                ),
+                                                onSubmitted: (value) {
+                                                  setState(
+                                                    () {
+                                                      totalAmount =
+                                                          double.parse(value);
+                                                    },
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                            Row(
+                                              children: [
+                                                SizedBox(
+                                                  width: 10,
+                                                  height: 20,
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      // 버튼 클릭 시 totalAmount 변수 값 증가
+                                                      setState(() {
+                                                        totalAmount += once;
+                                                        _consumedAmountController
+                                                                .text =
+                                                            totalAmount
+                                                                .toString();
+                                                      });
+                                                    },
+                                                    child: Container(
+                                                      padding:
+                                                          EdgeInsets.all(0),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.white,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(0),
+                                                      ),
+                                                      alignment:
+                                                          Alignment.center,
+                                                      child: Icon(
+                                                        Icons.arrow_drop_up,
+                                                        size: 20,
+                                                        color: Colors.red,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 5,
+                                                ),
+                                                SizedBox(
+                                                  width: 10,
+                                                  height: 20,
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      // 버튼 클릭 시 totalAmount 변수 값 증가
+                                                      setState(() {
+                                                        totalAmount -= once;
+                                                        _consumedAmountController
+                                                                .text =
+                                                            totalAmount
+                                                                .toString();
+                                                      });
+                                                    },
+                                                    child: Container(
+                                                      padding:
+                                                          EdgeInsets.all(0),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.white,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(0),
+                                                      ),
+                                                      alignment:
+                                                          Alignment.center,
+                                                      child: Icon(
+                                                        Icons.arrow_drop_down,
+                                                        size: 20,
+                                                        color: Colors.red,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ]),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          //사용자가 입력한 값을 total Amount로 변환
+                                          setState(() {
+                                            totalAmount = double.tryParse(
+                                                    _consumedAmountController
+                                                        .text) ??
+                                                0.0;
+                                          });
+                                          _add(searchdata, totalAmount, index);
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text('수정하기',
+                                            style: TextStyle(
+                                              fontSize: 15,
+                                            )),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ),
                           ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              )),
-        );});
-          }else if (snapshot.hasError) {
-            return Text('error');
-          }
-          return Center(child: CircularProgressIndicator(color: Colors.grey,));
-         });
+                        )),
+                  );
+                });
+              } else if (snapshot.hasError) {
+                return Text('error');
+              }
+              return Center(
+                  child: CircularProgressIndicator(
+                color: Colors.grey,
+              ));
+            });
       },
     );
   }
 }
-

@@ -136,7 +136,13 @@ class _SearchScreenState extends State<SearchScreen> {
                       itemCount: _matchingWords!.length,
                       itemBuilder: (context, index) {
                         return ListTile(
-                          title: Text(_matchingWords![index]),
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(flex: 2,child: Text(_matchingWords![index],overflow: TextOverflow.ellipsis,)),
+                              Flexible(flex: 1,child: Text(data![index]['region'],style: TextStyle(fontSize: 10),overflow: TextOverflow.ellipsis,))
+                            ],
+                          ),
                           onTap: () {
                             // Navigator.push(
                             //   context,
@@ -219,7 +225,11 @@ class _SearchScreenState extends State<SearchScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('${searchdata['food_name']}'),
+                        Row(
+                          children: [
+                            Flexible(child: Text('${searchdata['food_name']}')),
+                          ],
+                        ),
                         SizedBox(
                           height: 10,
                         ),
