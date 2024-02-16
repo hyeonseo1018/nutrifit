@@ -36,7 +36,6 @@ Future _recommend() async {
       body: body,
     );
     Map<String, dynamic> originalData = json.decode(response.body);
-    originalData["lack_nutrient"] = 1;
     String jsonString = jsonEncode(originalData);
     final String url_recommend = 'https://nutrifit-server-h52zonluwa-du.a.run.app/food/recommendfood';
     final http.Response recommend_response = await http.post(

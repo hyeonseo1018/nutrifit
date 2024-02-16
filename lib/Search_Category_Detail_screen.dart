@@ -143,8 +143,8 @@ class _DetailPageState extends State<DetailPage> {
                           title: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Flexible(child: Text(_matchingWords![index],overflow: TextOverflow.ellipsis,)),
-                              Text(data![index]['region'],style: TextStyle(fontSize: 10),)
+                              Flexible(flex: 2,child: Text(_matchingWords![index],overflow: TextOverflow.ellipsis,)),
+                              Flexible(flex: 1,child: Text(data![index]['region'],style: TextStyle(fontSize: 10),overflow: TextOverflow.ellipsis,))
                             ],
                           ),
                           onTap: () {
@@ -220,7 +220,11 @@ class _DetailPageState extends State<DetailPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('${searchdata['food_name']}'),
+                        Row(
+                          children: [
+                            Flexible(child: Text('${searchdata['food_name']}')),
+                          ],
+                        ),
                         SizedBox(
                           height: 10,
                         ),

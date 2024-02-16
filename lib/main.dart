@@ -70,7 +70,7 @@ class _SplashPageState extends State<SplashPage>{
       print('null');
     }
     else{
-      Navigator.push(context,MaterialPageRoute(builder: (context) =>  MyHomePage(selectedIndex: 1,)));
+      Navigator.push(context,MaterialPageRoute(builder: (context) =>  MyHomePage(selectedIndex: 1)));
       print('nonnull');
       print(await storage.read(key: 'jwtToken'));
     }

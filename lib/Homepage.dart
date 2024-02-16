@@ -14,7 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   double bmr_value = 0.0;
-  Map<String, dynamic> food_data = {};
+
   Future _info() async {
     final response = await http.get(
         Uri.parse(
@@ -41,24 +41,31 @@ class _HomePageState extends State<HomePage> {
     return response.body;
   }
 
-  Future _delete(food_list, index) async {
+  Future _delete(food_list,index) async {
+
+    food_list.removeAt(index);
+    print(index);
+    print(food_list);
     final String url =
         'https://nutrifit-server-h52zonluwa-du.a.run.app/users/update/todaysfood';
 
-    food_list.removeAt(index);
     final data = {'todaysfood': food_list.join(',')};
     String jsonString = json.encode(data);
-
+    print(jsonString);
     final http.Response response =
         await http.patch(Uri.parse(url), body: jsonString, headers: {
       "Content-Type": "application/json",
       'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
     });
+
     if (response.statusCode != 200) {
       print('삭제 실패!${response.statusCode}');
     } else {
       print('삭제 성공');
-      setState(() {});
+      setState(() {
+        
+      });
+
     }
   }
 
@@ -104,7 +111,8 @@ class _HomePageState extends State<HomePage> {
       print(response.body);
       return response.body;
     } else {
-      print('실패${response.statusCode}');
+      print('실패${response.reasonPhrase}');
+      print(food_list);
     }
   }
 
@@ -116,7 +124,8 @@ class _HomePageState extends State<HomePage> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final list = jsonDecode(snapshot.data);
-            final food_list = list['todays'].split(',');
+            final food_list = list['todays'].split(',') ==[]? [''] : list['todays'].split(',');
+            print(food_list);
             List today_nu = [
               {
                 'label': '열량',
@@ -168,6 +177,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                               CircularStepProgressIndicator(
+                                
                                 totalSteps: 100,
                                 currentStep:
                                     (list['today_energy'] / tdee * 100).floor(),
@@ -347,13 +357,14 @@ class _HomePageState extends State<HomePage> {
                                                           ),
                                                         ),
                                                         IconButton(
-                                                          onPressed: () {
-                                                            setState(() {
-                                                              _delete(food_list,
-                                                                  index);
-                                                              print(food_list);
-                                                            });
+
+                                                          onPressed: () async{
+                                                            
+                                                             await _delete(food_list,index);
+                                                            
+
                                                           },
+                                                        
                                                           padding:
                                                               EdgeInsets.zero,
                                                           visualDensity:
@@ -406,10 +417,13 @@ class _HomePageState extends State<HomePage> {
                                                                       index],
                                                                   index);
                                                             },
+                                                            style: ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255, 247, 241, 241)),
                                                             child: Text(
                                                               '자세히 보기',
                                                               style: TextStyle(
                                                                   fontSize: 10),
+                                                            
+                                                            
                                                             )))
                                                   ],
                                                 ),
@@ -531,6 +545,7 @@ class _HomePageState extends State<HomePage> {
                                   Row(
                                     children: [
                                       Flexible(
+                                        
                                         child: Text(
                                           '${searchdata.split('_')[2]}',
                                           style: TextStyle(
