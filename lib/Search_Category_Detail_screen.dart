@@ -239,7 +239,7 @@ class _DetailPageState extends State<DetailPage> {
                           mainAxisSize: MainAxisSize.min,
                           children: data.map((data) {
                             
-                            return Padding(
+                            if(data['value'][0] != -1){return Padding(
                               padding: const EdgeInsets.fromLTRB(
                                   16.0, 8.0, 8.0, 2.0),
                               child: Row(
@@ -250,7 +250,7 @@ class _DetailPageState extends State<DetailPage> {
                                   Text('${(data['value'][0]*(totalAmount/once)).toStringAsFixed(2)}' ' ${data['value'][1]}')
                                 ],
                               ),
-                            );
+                            );}else{return SizedBox(height: 0,);}
                           }).toList())), //영양 성분 정보
                   SizedBox(
                     height: 14,
