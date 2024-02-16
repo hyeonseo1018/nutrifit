@@ -10,15 +10,17 @@ import 'package:http/http.dart' as http;
 
 class RecommendScreen extends StatefulWidget {
   String todays = '';
-  RecommendScreen({required this.todays});
+  double tdee = 0.0;
+  RecommendScreen({required this.todays,required this.tdee});
 
   @override
-  _RecommendScreenState createState() => _RecommendScreenState(todays : todays);
+  _RecommendScreenState createState() => _RecommendScreenState(todays : todays,tdee :tdee);
 }
 
 class _RecommendScreenState extends State<RecommendScreen> {
   String todays = '';
-  _RecommendScreenState({required this.todays});
+  double tdee = 0.0;
+  _RecommendScreenState({required this.todays,required this.tdee});
   List<dynamic>? data;
   TextEditingController _consumedAmountController = TextEditingController();
   double totalAmount = 100.0;
@@ -36,6 +38,12 @@ Future _recommend() async {
       body: body,
     );
     Map<String, dynamic> originalData = json.decode(response.body);
+    originalData["nutrifit_percent"] = [
+      originalData['energy_kcal'] / (tdee),
+      originalData['protein_g']/(tdee / 4 * 0.14),
+      originalData['fat_g']/(tdee / 9 * 0.21),
+      originalData['carbohydrate_g']/(tdee / 4 * 0.65)
+    ];
     String jsonString = jsonEncode(originalData);
     final String url_recommend = 'https://nutrifit-server-h52zonluwa-du.a.run.app/food/recommendfood';
     final http.Response recommend_response = await http.post(
@@ -45,15 +53,17 @@ Future _recommend() async {
     );
 
     if (recommend_response.statusCode == 201) {
-      if(mounted){setState(() {
+      if(mounted){
         data = jsonDecode(recommend_response.body);
-      });}
+      }
       List<String> foodNames = [];
       for (var item in data!) {
         String foodName = item['food_name'];
         foodNames.add(foodName);
         recommendationData = foodNames;
       }
+      return recommend_response.body;
+      
 
     } else {
       print(jsonEncode(originalData));
@@ -73,7 +83,7 @@ Future _recommend() async {
     }); 
     Map<String, dynamic> dataMap = json.decode(response_get.body);
     final data = {
-      "todaysfood": (dataMap['todays'] == ''? '': dataMap['todays'] + ',') +'${searchdata['NO']}_${totalAmount}_${searchdata['food_name']}' ,
+      "todaysfood": (dataMap['todays'] == ''? '': dataMap['todays'] + '\\') +'${searchdata['NO']}^${totalAmount}^${searchdata['food_name']}' ,
     };
     String jsonString = json.encode(data);
     final http.Response response_post =
@@ -92,16 +102,14 @@ Future _recommend() async {
   }
 
   //추천 음식 목록
-  @override
 
-void initState() {
-    super.initState();
-    _recommend();
-    
-  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    
+    return FutureBuilder(future: _recommend(), builder: (context,snapshot){
+      if(snapshot.hasData){
+        return Scaffold(
       appBar: AppBar(
         title: Text('오늘의 추천 음식'),
         automaticallyImplyLeading: false,
@@ -116,6 +124,18 @@ void initState() {
         child: _buildRecommendations(), //추천 음식 목록 함수
       ),
     );
+      }else if(snapshot.hasError){
+        print(snapshot.error);
+        return Center(child: Text('오류 발생!'),);
+      } return Scaffold(
+        appBar: AppBar(),
+        body: Center(
+                child: CircularProgressIndicator(
+              color: Colors.grey,
+            )),
+      );
+    });
+    
   }
 
   Widget _buildRecommendations() {
@@ -343,14 +363,14 @@ void initState() {
                                   ),
                                 ]),
                             ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async{
                                 //사용자가 입력한 값을 total Amount로 변환
                                 setState(() {
                                   totalAmount = double.tryParse(
                                           _consumedAmountController.text) ??
                                       0.0;
                                 });
-                                _add(searchdata,totalAmount,once);
+                                await _add(searchdata,totalAmount,once);
                                 Navigator.pop(context);
                               },
                               child: Text('추가하기',

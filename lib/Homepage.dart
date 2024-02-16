@@ -44,14 +44,11 @@ class _HomePageState extends State<HomePage> {
   Future _delete(food_list,index) async {
 
     food_list.removeAt(index);
-    print(index);
-    print(food_list);
     final String url =
         'https://nutrifit-server-h52zonluwa-du.a.run.app/users/update/todaysfood';
 
-    final data = {'todaysfood': food_list.join(',')};
+    final data = {'todaysfood': food_list.join('\\')};
     String jsonString = json.encode(data);
-    print(jsonString);
     final http.Response response =
         await http.patch(Uri.parse(url), body: jsonString, headers: {
       "Content-Type": "application/json",
@@ -80,11 +77,11 @@ class _HomePageState extends State<HomePage> {
           'Authorization': 'Bearer ${await storage.read(key: 'jwtToken')}'
         });
     Map<String, dynamic> dataMap = json.decode(response_get.body);
-    List food = dataMap['todays'].split(',');
+    List food = dataMap['todays'].split('\\');
     food[index] =
-        '${searchdata.split('_')[0]}_${totalAmount}_${searchdata.split('_')[2]}_${searchdata.split('_')[3]}';
+        '${searchdata.split('^')[0]}^${totalAmount}^${searchdata.split('^')[2]}^${searchdata.split('^')[3]}';
     final data = {
-      "todaysfood": food.join(','),
+      "todaysfood": food.join('\\'),
     };
     String jsonString = json.encode(data);
     final http.Response response_post =
@@ -124,7 +121,7 @@ class _HomePageState extends State<HomePage> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final list = jsonDecode(snapshot.data);
-            final food_list = list['todays'].split(',') ==[]? [''] : list['todays'].split(',');
+            final food_list = list['todays'].split('\\') ==[]? [''] : list['todays'].split('\\');
             print(food_list);
             List today_nu = [
               {
@@ -202,6 +199,8 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                     Column(
                                       children: today_nu.map((item) {
+                                        double percent = item['value'][0] /(tdee *item['value'][2] /item['value'][3]);
+                                        if(percent>1){percent = 1;}else if(percent<0){percent = 0;}
                                         return SizedBox(
                                             child: Column(
                                           crossAxisAlignment:
@@ -231,17 +230,7 @@ class _HomePageState extends State<HomePage> {
                                               animation: true,
                                               animationDuration: 1200,
                                               lineHeight: 15,
-                                              percent: item['value'][0] /
-                                                          (tdee *
-                                                              item['value'][2] /
-                                                              item['value']
-                                                                  [3]) >
-                                                      1
-                                                  ? 1
-                                                  : item['value'][0] /
-                                                      (tdee *
-                                                          item['value'][2] /
-                                                          item['value'][3]),
+                                              percent: percent,
                                               center: Text(
                                                 '${(item['value'][0] / (tdee * item['value'][2] / item['value'][3]) * 100).floor()}%',
                                               ),
@@ -350,7 +339,7 @@ class _HomePageState extends State<HomePage> {
                                                       children: [
                                                         Flexible(
                                                           child: Text(
-                                                            '${food_list[index].split('_')[2]}',
+                                                            '${food_list[index].split('^')[2]}',
                                                             overflow:
                                                                 TextOverflow
                                                                     .ellipsis,
@@ -469,7 +458,7 @@ class _HomePageState extends State<HomePage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => RecommendScreen(
-                                        todays: list['todays']))).then((value) {
+                                        todays: list['todays'], tdee: tdee))).then((value) {
                               setState(() {});
                             });
                           },
@@ -492,8 +481,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _showDetailDialog(String searchdata, index) {
-    double once = double.parse(searchdata.split('_')[3]);
-    double totalAmount = double.parse(searchdata.split('_')[1]);
+    double once = double.parse(searchdata.split('^')[3]);
+    double totalAmount = double.parse(searchdata.split('^')[1]);
     TextEditingController _consumedAmountController =
         TextEditingController(text: '${totalAmount}');
 
@@ -547,7 +536,7 @@ class _HomePageState extends State<HomePage> {
                                       Flexible(
                                         
                                         child: Text(
-                                          '${searchdata.split('_')[2]}',
+                                          '${searchdata.split('^')[2]}',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold),
                                         ),
@@ -558,7 +547,7 @@ class _HomePageState extends State<HomePage> {
                                     width: 7,
                                   ),
                                   Text(
-                                        '(현재 섭취량 : ${searchdata.split('_')[1]}g)',
+                                        '(현재 섭취량 : ${searchdata.split('^')[1]}g)',
                                         style: TextStyle(fontSize: 13),
                                       ),
                                   SizedBox(

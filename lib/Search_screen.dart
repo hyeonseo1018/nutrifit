@@ -89,7 +89,7 @@ class _SearchScreenState extends State<SearchScreen> {
     }); 
     Map<String, dynamic> dataMap = json.decode(response_get.body);
     final data = {
-      "todaysfood": (dataMap['todays'] == ''? '': dataMap['todays'] + ',') +'${searchdata['NO']}_${totalAmount}_${searchdata['food_name']}_${searchdata['once']}' ,
+      "todaysfood": (dataMap['todays'] == ''? '': dataMap['todays'] + '\\') +'${searchdata['NO']}^${totalAmount}^${searchdata['food_name']}^${searchdata['once']}' ,
     };
     String jsonString = json.encode(data);
     final http.Response response_post =
@@ -373,14 +373,14 @@ class _SearchScreenState extends State<SearchScreen> {
                                   ),
                                 ]),
                             ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async{
                                 //사용자가 입력한 값을 total Amount로 변환
                                 setState(() {
                                   totalAmount = double.tryParse(
                                           _consumedAmountController.text) ??
                                       0.0;
                                 });
-                                _add(searchdata,totalAmount,once);
+                                await _add(searchdata,totalAmount,once);
                                 Navigator.pop(context);
                               },
                               child: Text('추가하기',

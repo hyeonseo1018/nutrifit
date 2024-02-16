@@ -95,7 +95,7 @@ class _DetailPageState extends State<DetailPage> {
     }); 
     Map<String, dynamic> dataMap = json.decode(response_get.body);
     final data = {
-      "todaysfood": (dataMap['todays'] == ''? '': dataMap['todays'] + ',') +'${searchdata['NO']}_${totalAmount}_${searchdata['food_name']}_${searchdata['once']}' ,
+      "todaysfood": (dataMap['todays'] == ''? '': dataMap['todays'] + '\\') +'${searchdata['NO']}^${totalAmount}^${searchdata['food_name']}^${searchdata['once']}' ,
     };
     String jsonString = json.encode(data);
     final http.Response response_post =
@@ -105,9 +105,10 @@ class _DetailPageState extends State<DetailPage> {
     });    
 
     if (response_post.statusCode != 200){
-      print('추가하기 성공!');
-    }else{
       print('추가하기 실패 ${response_post.statusCode}');
+    }else{
+      print('추가하기 성공!');
+      print(jsonString);
     }
   }
 
